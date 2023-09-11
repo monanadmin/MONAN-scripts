@@ -95,10 +95,21 @@ export PNETCDF=${PNETCDFDIR}
 export PIO=
 
 make clean CORE=atmosphere
-make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=true PRECISION=single 2>&1 | tee make.output
+make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+
+mkdir ${MPASDIR}/bin
+mv ${MPASDIR}/atmosphere_model ${MPASDIR}/bin
+mv ${MPASDIR}/buid_tables ${MPASDIR}/bin
+make clean CORE=atmosphere
 
 make clean CORE=init_atmosphere
-make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=true PRECISION=single 2>&1 | tee make.output
+make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+
+mv ${MPASDIR}/init_atmosphere_model ${MPASDIR}/bin
+make clean CORE=init_atmosphere
+cp -f ${MPASDIR}/bin/init_atmosphere_model ${MPASDIR}
+cp -f ${MPASDIR}/bin/atmosphere_model ${MPASDIR}
+cp -f ${MPASDIR}/bin/build_tables ${MPASDIR}
 
 EOF
 chmod a+x make.sh

@@ -1,2 +1,0 @@
-Após a instalação de 1.install_spack.bash, caso a sequência de scripts precise ser retomada, por algum motivo, é necessário executar o comando abaixo, para que os módulos do sistema e o spack com wps seja carregado:
-source spack_wps/env_wps.sh

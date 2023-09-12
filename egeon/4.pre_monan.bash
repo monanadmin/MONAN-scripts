@@ -13,6 +13,8 @@
 #DIRroot=${1}
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
+export DIRMPAS_ORI=${DIRroot}/MPAS_ori  # will override scripts at MPAS
+
 export DIRMPASEXECS=${DIRMPAS}/src/MPAS-Model_${vlabel}_egeon.gnu940
 
 export DIRDADOS=/mnt/beegfs/monan/dados/MPAS_v8.0.1 
@@ -42,6 +44,7 @@ echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing.
 echo -e  "${GREEN}==>${NC} It takes several minutes...\n"
 #cd ${DIRMPAS}/tar
 tar -xzf ${DIRDADOS}/MPAS_testcase.v1.0.tgz -C ${DIRroot}
+cp -rf ${DIRMPAS_ORI }/testcase/scripts/* ${DIRMPAS }/testcase/scripts/*
 tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
 
 

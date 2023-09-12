@@ -139,10 +139,6 @@ if [ ! -e ${EXPDIR} ]; then
    mkdir -p ${EXPDIR}/mpasprd
    mkdir -p ${EXPDIR}/wpsprd
    mkdir -p ${EXPDIR}/postprd
-#   mkdir -p ${EXPDIR}/parm
-#   mkdir -p ${EXPDIR}/output
-#   cd  ${EXPDIR}/parm
-#   ln -sf ${BASEDIR}/parm/* .
    cd ${EXPDIR}/postprd
    ln -sf ${EXEDIR}/convert_mpas .
    cp ${SCRDIR}/ngrid2latlon.sh .
@@ -201,28 +197,19 @@ cat > degrib_exe.sh << EOF0
 #
 ulimit -s unlimited
 ulimit -c unlimited
-#ulimit -m unlimited
 ulimit -v unlimited
 
-#export  PMI_NO_FORK=1
-
-#export OMPI_MCA_btl_openib_allow_ib=1
-#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
 export PMIX_MCA_gds=hash
 
 echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start > Timing.degrib
 #
-#module list
-#ldd ungrib.exe
 
-#. ${HOME}/.spack/gnu/env.sh
 . ${DIRMPAS}/spack_wps/env_wps.sh
-# cp /usr/lib64/libjasper.so* ${HOME}/local/lib64
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
 
-# Load packges for MPAS@GNU:
+# Load packges for WPS@GNU:
 spack load --only dependencies wps@4.3.1%gcc@9.4.0
 spack load --list
 
@@ -271,7 +258,6 @@ sed -e "s,#LABELI#,${start_date},g;s,#PREFIX#,FILE,g" \
 ./link_grib.csh e5.oper.an.*.grb
 
 mpirun -np 1 ./ungrib.exe
-#mv ungrib.log ungrib.${start_date}.log
 
 echo ${start_date:0:13}
 
@@ -285,7 +271,6 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >>Timing.degrib
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >> Timing.degrib
 
-#grep "Successful completion of ungrib." ungrib.log >& /dev/null
 grep "Successful completion of program ungrib.exe" ungrib.log >& /dev/null
 
 if [ \$? -ne 0 ]; then
@@ -319,8 +304,6 @@ EOF0
 ###############################################################
 
 chmod +x degrib_exe.sh
-#export QPIDungrib=$(sbatch degrib_exe.sh)
-#echo "QPIDungrib: ${QPIDungrib}"
 
 ###############################################################################
 #
@@ -339,8 +322,6 @@ cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
 ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
 
 # executable
-
-#in -sf ${EXEDIR}/init_atmosphere_model init_atmosphere_model
 ln -sf ${EXECFILEPATH}/init_atmosphere_model init_atmosphere_model
 
 JobName=ic_mpas
@@ -358,20 +339,13 @@ cat > InitAtmos_exe.sh <<EOF0
 #
 export OMP_NUM_THREADS=1
 ulimit -c unlimited
-#ulimit -m unlimited
 ulimit -v unlimited
 ulimit -s unlimited
 
-#export OMPI_MCA_btl_openib_allow_ib=1
-#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
 export PMIX_MCA_gds=hash
 
-#. ${HOME}/.spack/gnu/env.sh
 
 # Load packges for MPAS@GNU:
-#spack load --only dependencies mpas-model%gcc@9.4.0
-#spack load --list
-
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
 export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
@@ -396,15 +370,12 @@ echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing.InitAtmo
  mv namelist.init* streams.init* ${EXPDIR}/scripts
  mv InitAtmos_exe.sh ${EXPDIR}/scripts
 
-# find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
 
 date
 exit 0
 EOF0
 
 chmod +x InitAtmos_exe.sh
-#export QPIDreal=$(qsub -W depend=afterok:${QPIDungrib} InitAtmos_exe.sh)
-#echo "QPIDread: ${QPIDreal}"
 
 else
 
@@ -460,17 +431,9 @@ cat > mpas_exe.sh <<EOF0
 #SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
 
 export executable=atmosphere_model
-#export OMPI_MCA_btl_openib_allow_ib=1
-#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
 export PMIX_MCA_gds=hash
 
-# Carregar o ambiente do spack:
-#. ${HOME}/.spack/gnu/env.sh
-
 # Load packges for MPAS@GNU:
-#spack load --only dependencies mpas-model%gcc@9.4.0
-#spack load --list
-
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
 export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
@@ -478,21 +441,13 @@ ulimit -s unlimited
 
 cd ${EXPDIR}
 
-#export MPAS_DYNAMICS_RANKS_PER_NODE=2
-#export MPAS_RADIATION_RANKS_PER_NODE=6
-#export MALLOCSTATS=1
 
-#export OMP_NUM_THREADS=1
-#export I_MPI_OFI_PROVIDER=Verbs
-
-#cd  $SLURM_SUBMIT_DIR
 echo \$SLURM_JOB_NUM_NODES
 
 echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-#time mpirun -np \$SLURM_NTASKS  -genv UCX_TLS=all ./\${executable}
 time mpirun -np \$SLURM_NTASKS ./\${executable}
 
 End=\`date +%s.%N\`
@@ -503,7 +458,6 @@ echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 #
 # move dataout, clean up and remove files/links
 #
-#mv slurm-\${SLURM_JOBID}.out ${LOGDIR}
 mv log.atmosphere.*.out ${LOGDIR}
 
 mv namelist.atmosphere ${EXPDIR}/scripts
@@ -514,15 +468,12 @@ mv diag* ${EXPDIR}/mpasprd
 mv histor* ${EXPDIR}/mpasprd
 mv Timing ${LOGDIR}/Timing.MPAS
 
-#find ${EXPDIR} -maxdepth 1 -type f -exec rm -f {} \;
 find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
 
 exit 0
 EOF0
 
 chmod +x mpas_exe.sh
-#export QPIDwrf=$(qsub -W depend=afterok:${QPIDreal} mpas_exe.sh)
-#echo "QPIDwrf: ${QPIDwrf}"
 
 exit 0
 

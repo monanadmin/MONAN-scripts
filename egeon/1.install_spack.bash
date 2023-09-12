@@ -53,5 +53,5 @@ chmod a+x ${SPACK_GIT}/${SPACK_NAME}/env_wps.sh
 
 
 echo ""
-echo -e  "${GREEN}==>${NC} Please source spack_wps/env_wps.sh before continue... \n"
+echo -e  "${GREEN}==>${NC} Please source ${SPACK_GIT}/${SPACK_NAME}/env_wps.sh before continue... \n"
 

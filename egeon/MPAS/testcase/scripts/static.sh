@@ -1,0 +1,150 @@
+#!/bin/bash
+#-----------------------------------------------------------------------------#
+#BOP
+#
+# !SCRIPT: static
+#
+# !DESCRIPTION: Script para criar topografia, land use e variáveis estáticas
+#
+# !CALLING SEQUENCE:
+#
+#     ./static.sh DIRECTORY RESOLUTION
+#           DIRECTORY: EXP_NAME, ERA5, CFSR, etc.
+#           RESOLUTION: 1024002  (24 km)
+#
+# For benchmark:
+#     ./static.sh ERA5 1024002
+#
+# !REVISION HISTORY: 
+#
+# !REMARKS:
+#
+#EOP
+#-----------------------------------------------------------------------------!
+#EOC
+
+function usage(){
+   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' static.sh | head -n -1
+}
+
+#
+# Check input args
+#
+
+if [ $# -ne 2 ]; then
+   usage
+   exit 1
+fi
+
+#
+# Args
+#
+   EXP=${1}
+   RES=${2}
+#
+# Paths
+#
+
+#CR: todo: later, change this fixed variable to dynamic variable:
+vlabel="v8.0.1"
+#---
+HSTMAQ=$(hostname)
+BASEDIR=$(dirname $(pwd))
+DATADIR=${BASEDIR}/data
+TBLDIR=${BASEDIR}/tables
+NMLDIR=${BASEDIR}/namelist
+GEODATA=${BASEDIR}/data/WPS_GEOG/
+EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
+SCRIPTFILEPATH=${BASEDIR}/runs
+STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
+
+
+#
+# Criando diretorio dados Estaticos
+#
+
+if [ ! -d ${STATICPATH} ]; then
+ mkdir -p ${STATICPATH}/logs
+fi
+
+cd ${STATICPATH}
+
+ln -sf ${TBLDIR}/* .
+ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
+
+ln -sf ${EXECFILEPATH}/init_atmosphere_model .
+
+sed -e "s,#GEODAT#,${GEODATA},g;s,#RES#,${RES},g" \
+	${NMLDIR}/namelist.init_atmosphere.STATIC \
+       > ${STATICPATH}/namelist.init_atmosphere
+
+sed -e "s,#RES#,${RES},g" \
+       	${NMLDIR}/streams.init_atmosphere.STATIC \
+	> ${STATICPATH}/streams.init_atmosphere
+
+#
+# make submission job
+#
+
+cat > ${STATICPATH}/make_static.sh << EOF0
+#!/bin/bash
+#SBATCH --job-name=static
+#SBATCH --nodes=1              # Specify number of nodes
+#SBATCH --partition=batch
+#SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
+#SBATCH --time=02:00:00        # Set a limit on the total run time
+#SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
+#SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
+
+# Bind your OpenMP threads
+export OMP_NUM_THREADS=1
+ulimit -s unlimited
+ulimit -c unlimited
+ulimit -v unlimited
+export PMIX_MCA_gds=hash
+
+export NETCDF=/mnt/beegfs/monan/libs/netcdf
+export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
+
+cd ${STATICPATH}
+
+echo  "STARTING AT \`date\` "
+Start=\`date +%s.%N\`
+echo \$Start > ${STATICPATH}/Timing
+
+date
+mpirun -np 1 ./init_atmosphere_model
+
+
+End=\`date +%s.%N\`
+echo  "FINISHED AT \`date\` "
+echo \$End   >> ${STATICPATH}/Timing
+echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >> ${STATICPATH}/Timing
+
+grep "Finished running" log.init_atmosphere.0000.out >& /dev/null
+
+if [ \$? -ne 0 ]; then
+   echo "  BUMMER: Static generation failed for some yet unknown reason."
+   echo " "
+   tail -10 ${STATICPATH}/log.init_atmosphere.0000.out
+   echo " "
+   exit 21
+fi
+   echo "  ####################################"
+   echo "  ### Static completed - \$(date) ####"
+   echo "  ####################################"
+   echo " "
+#
+# clean up and remove links
+#
+
+mv log.init_atmosphere.0000.out ${STATICPATH}/logs
+mv Timing  ${STATICPATH}/logs
+
+find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
+
+date
+exit 0
+EOF0
+
+chmod +x ${STATICPATH}/make_static.sh

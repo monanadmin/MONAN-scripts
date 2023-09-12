@@ -34,28 +34,28 @@ mkdir -p ${DIRMPAS}/tar
  
 echo ""
 echo -e  "${GREEN}==>${NC} Copying ungrib.exe from WPS dir...\n"
-#cp -f ${WPSDIR}/ungrib.exe ${DIRMPAS}/exec
+cp -f ${WPSDIR}/ungrib.exe ${DIRMPAS}/exec
 
 
 echo ""
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It takes several minutes...\n"
 #cd ${DIRMPAS}/tar
-#tar -xzf ${DIRDADOS}/MPAS_testcase.v1.0.tgz -C ${DIRroot}
-#3tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
+tar -xzf ${DIRDADOS}/MPAS_testcase.v1.0.tgz -C ${DIRroot}
+tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
 
 
 
 echo ""
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
-#cd ${DIRMPAS}/testcase/scripts
-#${DIRMPAS}/testcase/scripts/static.sh ERA5 1024002
+cd ${DIRMPAS}/testcase/scripts
+${DIRMPAS}/testcase/scripts/static.sh ERA5 1024002
 
 echo ""
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
 #CR: TO DO: verificar arquivos de saida se foram gerados corretamente
-#cd ${DIRMPAS}/testcase/runs/ERA5/static
-#sbatch --wait make_static.sh
+cd ${DIRMPAS}/testcase/runs/ERA5/static
+sbatch --wait make_static.sh
 
 
 echo ""

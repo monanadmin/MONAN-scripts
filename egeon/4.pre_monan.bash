@@ -11,6 +11,14 @@
 #fi
 
 #DIRroot=${1}
+
+
+if ! which spack > /dev/null; then
+  echo "Spack was not loaded. Please execute before this script:" 
+  echo "source .${DIRroot}/spack_wps/env_wps.sh"
+  exit
+fi
+
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
 export DIRMPAS_ORI=${DIRroot}/MPAS_ori  # will override scripts at MPAS

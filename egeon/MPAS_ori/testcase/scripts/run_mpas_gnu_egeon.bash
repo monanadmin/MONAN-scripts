@@ -206,7 +206,7 @@ Start=\`date +%s.%N\`
 echo \$Start > Timing.degrib
 #
 
-. ${DIRMPAS}/spack_wps/env_wps.sh
+. ${DIRroot}/spack_wps/env_wps.sh
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
 
 # Load packges for WPS@GNU:

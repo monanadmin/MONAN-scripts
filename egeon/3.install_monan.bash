@@ -116,6 +116,7 @@ chmod a+x make.sh
 
 
 echo ""
-echo -e  "${GREEN}==>${NC} execute: cd ${MPASDIR} && source make.sh to compile MPAS."
+echo -e  "${GREEN}==>${NC} execute: the following to compile MPAS:"
+echo -e  "${GREEN}==>${NC} cd ${MPASDIR} && source make.sh && cd ../../.."
 echo ""
 

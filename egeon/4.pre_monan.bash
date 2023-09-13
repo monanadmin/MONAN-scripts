@@ -40,11 +40,13 @@ cp -f ${WPSDIR}/ungrib.exe ${DIRMPAS}/exec
 
 
 echo ""
-echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It takes several minutes...\n"
 #cd ${DIRMPAS}/tar
+echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 tar -xzf ${DIRDADOS}/MPAS_testcase.v1.0.tgz -C ${DIRroot}
-cp -rf ${DIRMPAS_ORI }/testcase/scripts/* ${DIRMPAS }/testcase/scripts/*
+echo -e  "${GREEN}==>${NC} Copyings scripts from MPAS_ori to MPAS testcase script folders... \n"
+cp -rfv ${DIRMPAS_ORI}/testcase/scripts/* ${DIRMPAS}/testcase/scripts/
+echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
 
 
@@ -63,7 +65,6 @@ sbatch --wait make_static.sh
 
 echo ""
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"
-cp -f ${DIRroot}/run_mpas_gnu_egeon.bash ${DIRMPAS}/testcase/scripts
 cd ${DIRMPAS}/testcase/scripts
 ${DIRMPAS}/testcase/scripts/run_mpas_gnu_egeon.bash ERA5 2021010100
 

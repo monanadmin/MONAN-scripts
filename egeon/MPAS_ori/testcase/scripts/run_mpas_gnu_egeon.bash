@@ -344,6 +344,7 @@ ulimit -s unlimited
 
 export PMIX_MCA_gds=hash
 
+${DIRroot}/load_monan_app_modules.sh
 
 # Load packges for MPAS@GNU:
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
@@ -432,6 +433,8 @@ cat > mpas_exe.sh <<EOF0
 
 export executable=atmosphere_model
 export PMIX_MCA_gds=hash
+
+${DIRroot}/load_monan_app_modules.sh
 
 # Load packges for MPAS@GNU:
 export NETCDF=/mnt/beegfs/monan/libs/netcdf

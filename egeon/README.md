@@ -8,5 +8,7 @@ This scripts aim to configure and execute the pre processing, MONAN model and th
 - 5.monan.bash         - runs atmosphere_model
 - 6.pos_monan.bash     - runs MONAN post processing
 
+The folder MPAS_ori/testcase/scripts contains scripts versioned here that will ovewrite scripts executed in MPAS/testcase/scripts. The 4.pre_monan.bash copies the files from MPAS_ori to MPAS before execution.
+
 After script 1.install_spack.bash, in case of log off the egeon system, you need to execute again source spack_wps/env_wps.sh, to load spack and modules.
 

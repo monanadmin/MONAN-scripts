@@ -401,7 +401,7 @@ fi
 cd ${EXPDIR}
 
 JobName=MPAS.GNU        # Nome do Job
-cores=1024
+cores=512
 
 #ln -sf ${EXEDIR}/atmosphere_model .
 ln -sf ${EXECFILEPATH}/atmosphere_model .
@@ -423,7 +423,7 @@ fi
 
 cat > mpas_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=16
+#SBATCH --nodes=8
 #SBATCH --ntasks=${cores}
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch

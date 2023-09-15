@@ -329,10 +329,11 @@ JobName=ic_mpas
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
-#SBATCH --nodes=1                         # depends on how many boundary files are available
-#SBATCH --partition=batch
-#SBATCH --tasks-per-node=32               # only for benchmark
-####SBATCH --ntasks=2048
+#####SBATCH --nodes=1                         # depends on how many boundary files are available
+#SBATCH --nodes=2                             # TESTE DENIS - erro de mem com mpich
+#SBATCH --partition=batch 
+#####SBATCH --tasks-per-node=32               # only for benchmark
+#SBATCH --tasks-per-node=16                   # TESTE DENIS - erro de OOM com mpich
 #SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output

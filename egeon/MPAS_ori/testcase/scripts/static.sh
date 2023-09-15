@@ -106,6 +106,7 @@ export PMIX_MCA_gds=hash
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
 export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
+${BASEDIR}/../load_monan_app_modules.sh
 cd ${STATICPATH}
 
 echo  "STARTING AT \`date\` "

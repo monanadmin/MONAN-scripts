@@ -74,7 +74,11 @@ TMPDIR=${BASEDIR}/TMP
 FIXDIR=${BASEDIR}/fix
 GEODIR=${DATADIR}/geog
 STCDIR=${DATADIR}/static
+
+# TODO - move exex to EXECPATH (below)
 EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
+
+EXECPATH=${BASEDIR}/../exec
 
 #
 # pegando argumentos
@@ -171,7 +175,7 @@ ln -sf ${TBLDIR}/Vtable.ERA-interim.pl ./Vtable
 
 cp ${SCRDIR}/link_grib.csh .
 
-ln -sf ${EXEDIR}/ungrib.exe                    .
+ln -sf ${EXECPATH}/ungrib.exe                    .
 
 ln -sf ${BNDDIR}/*.grb .
 

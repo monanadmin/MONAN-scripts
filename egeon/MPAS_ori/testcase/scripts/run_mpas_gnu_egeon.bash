@@ -441,7 +441,16 @@ ${DIRroot}/load_monan_app_modules.sh
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
 export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
+export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
+export PMIX_MCA_gds=hash
 ulimit -s unlimited
+MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export I_MPI_DEBUG=5
+export MKL_DEBUG_CPU_TYPE=5
+export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
 
 cd ${EXPDIR}
 
@@ -452,7 +461,7 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-time mpirun -np \$SLURM_NTASKS ./\${executable}
+time mpirun -env UCX_NET_DEVICES=mlx5_0:1 -genvall -np \$SLURM_NTASKS ./${executable}
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

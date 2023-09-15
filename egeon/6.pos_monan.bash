@@ -32,6 +32,8 @@ echo -e  "${GREEN}==>${NC} Initiating post processing...\n"
 
 cd ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd
 
+rm -f ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/convert_mpas
+
 ln -s ${DIRMPASSRC}/convert_mpas/convert_mpas ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/
 
 ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/ngrid2latlon.sh 

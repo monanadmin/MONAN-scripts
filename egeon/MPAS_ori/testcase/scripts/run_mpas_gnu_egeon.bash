@@ -437,27 +437,38 @@ cat > mpas_exe.sh <<EOF0
 #SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
 
 export executable=atmosphere_model
-export PMIX_MCA_gds=hash
 
-${DIRroot}/load_monan_app_modules.sh
+
+# mpich
+. ${DIRroot}/load_monan_app_modules.sh
+
+
+# intel
+#MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
+#export MKL_NUM_THREADS=1
+#export I_MPI_DEBUG=5
+#export MKL_DEBUG_CPU_TYPE=5
+#export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
+
+
+# openmpi
+#export PMIX_MCA_gds=hash
+#export OMPI_MCA_btl_openib_allow_ib=1
+#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
+#export PMIX_MCA_gds=hash
+
+
+# generic
+ulimit -s unlimited
+export OMP_NUM_THREADS=1
+
 
 # Load packges for MPAS@GNU:
 export NETCDF=/mnt/beegfs/monan/libs/netcdf
 export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
-export OMPI_MCA_btl_openib_allow_ib=1
-export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
-export PMIX_MCA_gds=hash
-ulimit -s unlimited
-MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
-export OMP_NUM_THREADS=1
-export MKL_NUM_THREADS=1
-export I_MPI_DEBUG=5
-export MKL_DEBUG_CPU_TYPE=5
-export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
 
 cd ${EXPDIR}
-
 
 echo \$SLURM_JOB_NUM_NODES
 
@@ -466,7 +477,6 @@ Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
 time mpirun -np \$SLURM_NTASKS ./${executable}
-# NAO RECONHECE -env ... TODO verificar => time mpirun -env UCX_NET_DEVICES=mlx5_0:1 -genvall -np \$SLURM_NTASKS ./${executable}  
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -476,8 +486,8 @@ echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 #
 # move dataout, clean up and remove files/links
 #
+# TODO - parametrize move and remove links or not
 mv log.atmosphere.*.out ${LOGDIR}
-
 mv namelist.atmosphere ${EXPDIR}/scripts
 mv mpas_exe.sh ${EXPDIR}/scripts
 mv stream* ${EXPDIR}/scripts
@@ -485,7 +495,6 @@ mv x1.*.init.nc* ${EXPDIR}/mpasprd
 mv diag* ${EXPDIR}/mpasprd
 mv histor* ${EXPDIR}/mpasprd
 mv Timing ${LOGDIR}/Timing.MPAS
-
 find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
 
 exit 0

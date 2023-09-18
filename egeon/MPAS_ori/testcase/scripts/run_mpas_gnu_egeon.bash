@@ -465,7 +465,8 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-time mpirun -env UCX_NET_DEVICES=mlx5_0:1 -genvall -np \$SLURM_NTASKS ./${executable}
+time mpirun -np \$SLURM_NTASKS ./${executable}
+# NAO RECONHECE -env ... TODO verificar => time mpirun -env UCX_NET_DEVICES=mlx5_0:1 -genvall -np \$SLURM_NTASKS ./${executable}  
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

@@ -483,7 +483,7 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
-if [ ! -e "${EXPDIR}/x1.1024002.init.nc" ]; then
+if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MPAS occurred. check logs folder"
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."

@@ -107,6 +107,9 @@ cp -f ${MPASDIR}/bin/init_atmosphere_model ${MPASDIR}/
 cp -f ${MPASDIR}/bin/atmosphere_model ${MPASDIR}/
 cp -f ${MPASDIR}/bin/build_tables ${MPASDIR}/
 
+if [ -e "${MPASDIR}/init_atmosphere_model" ] && [ -e "${MPASDIR}/atmosphere_model" ]; then
+    echo "!!! Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR} !!!"
+
 EOF
 chmod a+x make.sh
 

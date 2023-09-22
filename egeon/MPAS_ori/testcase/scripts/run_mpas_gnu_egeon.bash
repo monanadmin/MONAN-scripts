@@ -483,10 +483,17 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
+if [ ! -e "${EXPDIR}/x1.1024002.init.nc" ]; then
+    echo "********* ATENTION ************"
+    echo "An error running MPAS occurred. check logs folder"
+    echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
+    exit -1
+fi
+  
 #
 # move dataout, clean up and remove files/links
 #
-# TODO - parametrize move and remove links or not
+
 mv log.atmosphere.*.out ${LOGDIR}
 mv namelist.atmosphere ${EXPDIR}/scripts
 mv mpas_exe.sh ${EXPDIR}/scripts

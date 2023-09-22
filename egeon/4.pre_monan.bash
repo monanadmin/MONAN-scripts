@@ -14,6 +14,7 @@
 
 
 if ! which spack > /dev/null; then
+  echo -e  "${GREEN}==>${NC} ******** ATTENTION *********" 	
   echo "Spack was not loaded. Please execute before this script:" 
   echo "source .${DIRroot}/spack_wps/env_wps.sh"
   exit

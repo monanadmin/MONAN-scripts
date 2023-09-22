@@ -436,7 +436,7 @@ cat > mpas_exe.sh <<EOF0
 #SBATCH --output=${LOGDIR}/my_job_mpas.o%j   # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
 
-export executable=atmosphere_model
+#export executable=atmosphere_model
 
 
 # mpich
@@ -476,7 +476,7 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-time mpirun -np \$SLURM_NTASKS ./${executable}
+time mpirun -np \$SLURM_NTASKS ./atmosphere_model
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

@@ -333,27 +333,31 @@ JobName=ic_mpas
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
-#####SBATCH --nodes=1                         # depends on how many boundary files are available
-#SBATCH --nodes=2                             # TESTE DENIS - erro de mem com mpich
+##SBATCH --nodes=1                         # depends on how many boundary files are available
+#####SBATCH --nodes=2                             # TESTE DENIS - erro de mem com mpich
 #SBATCH --partition=batch 
-#####SBATCH --tasks-per-node=32               # only for benchmark
-#SBATCH --tasks-per-node=16                   # TESTE DENIS - erro de OOM com mpich
-#SBATCH --time=${JobElapsedTime}
+#SBATCH --tasks-per-node=32               # only for benchmark
+#####SBATCH --tasks-per-node=16                   # TESTE DENIS - erro de OOM com mpich
+##SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
 #
-export OMP_NUM_THREADS=1
+
+export executable=init_atmosphere_model
+
+#export OMP_NUM_THREADS=1
 ulimit -c unlimited
 ulimit -v unlimited
 ulimit -s unlimited
 
-export PMIX_MCA_gds=hash
+#export PMIX_MCA_gds=hash
 
-${DIRroot}/load_monan_app_modules.sh
+cd ${DIRroot}
+. ${DIRroot}/load_monan_app_modules.sh
 
 # Load packges for MPAS@GNU:
-export NETCDF=/mnt/beegfs/monan/libs/netcdf
-export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
+#export NETCDF=/mnt/beegfs/monan/libs/netcdf
+#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
 cd ${EXPDIR}
 
@@ -361,7 +365,8 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing.InitAtmos
 
-mpirun -n 32 ./init_atmosphere_model
+#mpirun -n 32 ./init_atmosphere_model
+time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 # Wait for all jobs to finish before exiting the job submission script
 
@@ -436,12 +441,12 @@ cat > mpas_exe.sh <<EOF0
 #SBATCH --output=${LOGDIR}/my_job_mpas.o%j   # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
 
-#export executable=atmosphere_model
+export executable=atmosphere_model
 
 
 # mpich
+cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
-
 
 # intel
 #MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
@@ -460,12 +465,12 @@ cat > mpas_exe.sh <<EOF0
 
 # generic
 ulimit -s unlimited
-export OMP_NUM_THREADS=1
+#export OMP_NUM_THREADS=1
 
 
 # Load packges for MPAS@GNU:
-export NETCDF=/mnt/beegfs/monan/libs/netcdf
-export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
+#export NETCDF=/mnt/beegfs/monan/libs/netcdf
+#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
 
 cd ${EXPDIR}
@@ -476,7 +481,8 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-time mpirun -np \$SLURM_NTASKS ./atmosphere_model
+#time mpirun -np \$SLURM_NTASKS ./atmosphere_model
+time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

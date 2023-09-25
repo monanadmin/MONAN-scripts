@@ -2,6 +2,7 @@
 
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
+export DIRMPAS_ORI=${DIRroot}/MPAS_ori
 export DIRMPASSRC=${DIRMPAS}/src
 export DIRMPASEXECS=${DIRMPAS}/src/convert_mpas
 export DIRMPASSCRIPTS=${DIRMPAS}/testcase/scripts
@@ -30,14 +31,17 @@ make  2>&1 | tee make.convert.output
 echo ""
 echo -e  "${GREEN}==>${NC} Initiating post processing...\n"
 
+# copy convert_mpas from MPAS/src to testcase
 cd ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd
-
 rm -f ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/convert_mpas
-
 ln -s ${DIRMPASSRC}/convert_mpas/convert_mpas ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/
 
+# copy from repository to testcase and runs /ngrid2latlon.sh
+cp ${DIRMPAS_ORI}/testcase/scripts/ngrid2latlon.sh ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/ngrid2latlon.sh
 ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/ngrid2latlon.sh 
 
+# copy from repository to testcase and runs prec.gs
+cp ${DIRMPAS_ORI}/testcase/scripts/prec.gs ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/prec.gs
 grads -bpcx "run '${DIRMPAS}'/testcase/runs/ERA5/2021010100/postprd/prec.gs"  
 
 cdo hourmean surface.nc mean.nc

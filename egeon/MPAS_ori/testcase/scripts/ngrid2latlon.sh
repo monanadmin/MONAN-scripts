@@ -27,11 +27,12 @@ rm -f latlon.nc
 #
 # 3.  
 #
-./convert_mpas ../mpasprd/history.2021-01-04_00.00.00.nc
+./convert_mpas ../mpasprd/history.2021-01-02_00.00.00.nc
 
 #cdo -setreftime,1900-01-01,00:00:00,1day -setdate,1900-01-01 -setcalendar,standard latlon.nc history.2021-01-04_00.00.00.nc
 
-cdo settunits,hours -settaxis,2021-01-04,00:00,3hour latlon.nc history.2021-01-04_00.00.00.nc
+# 24h
+cdo settunits,hours -settaxis,2021-01-02,00:00,3hour latlon.nc history.2021-01-02_00.00.00.nc
 
 rm -f latlon.nc
 

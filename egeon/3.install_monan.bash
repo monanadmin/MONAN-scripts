@@ -1,19 +1,18 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]
+if [ $# -ne 2 ]
 then
    echo ""
-   echo "${0} [V]"
+   echo "${0} [V] [G]"
    echo ""
-   echo "V   :: Mpas version:"
+   echo "V   :: MPAS version:"
    echo "                      to install v8.0.1 :: 8"
-   echo "                      to install v7.3   :: 7"
-   echo "                      to install v6.3   :: 6"
-   echo ""
+   echo "G   :: GitHub link for clone, eg: https://github.com/MYUSER/MONAN-Model.git"
    exit
 fi
 
 version=${1}
+github_link=${2}
 NETCDFDIR=/mnt/beegfs/monan/libs/netcdf
 PNETCDFDIR=/mnt/beegfs/monan/libs/PnetCDF
 # PIO isn't mandatory anymore in version v8, since included SMIOL lib substitute it
@@ -40,7 +39,7 @@ echo -e  "${GREEN}==>${NC} Moduling environment..."
 echo ""
 echo -e  "${GREEN}==>${NC} Cloning repository..."
 rm -fr ${MPASDIR}
-git clone  https://github.com/MPAS-Dev/MPAS-Model.git ${MPASDIR}
+git clone ${github_link} ${MPASDIR}
 cd ${MPASDIR}
 git checkout tags/${vlabel} -b branch_${vlabel}
 

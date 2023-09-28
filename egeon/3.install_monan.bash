@@ -1,18 +1,18 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]
+if [ $# -ne 1 ]
 then
    echo ""
-   echo "${0} [V] [G]"
+   echo "Instructions: execute the command below"
    echo ""
-   echo "V   :: MPAS version:"
-   echo "                      to install v8.0.1 :: 8"
-   echo "G   :: GitHub link for clone, eg: https://github.com/MYUSER/MONAN-Model.git"
+   echo "${0} [G]"
+   echo ""
+   echo "G   :: GitHub link for your personal fork, eg: https://github.com/MYUSER/MONAN-Model.git"
    exit
 fi
 
-version=${1}
-github_link=${2}
+version="8"
+github_link=${1}
 NETCDFDIR=/mnt/beegfs/monan/libs/netcdf
 PNETCDFDIR=/mnt/beegfs/monan/libs/PnetCDF
 # PIO isn't mandatory anymore in version v8, since included SMIOL lib substitute it
@@ -40,6 +40,11 @@ echo ""
 echo -e  "${GREEN}==>${NC} Cloning repository..."
 rm -fr ${MPASDIR}
 git clone ${github_link} ${MPASDIR}
+if [ ! -d "${MPASDIR}" ]; then
+    echo "An error occurred while cloning you fork. Possible causes:  wrong URL, user or password."
+    exit -1
+fi
+
 cd ${MPASDIR}
 git checkout tags/${vlabel} -b branch_${vlabel}
 

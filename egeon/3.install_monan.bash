@@ -46,7 +46,7 @@ if [ ! -d "${MPASDIR}" ]; then
 fi
 
 cd ${MPASDIR}
-git checkout tags/${vlabel} -b branch_${vlabel}
+git checkout -b develop
 
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script..."

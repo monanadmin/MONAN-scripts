@@ -41,7 +41,7 @@ echo -e  "${GREEN}==>${NC} Cloning repository..."
 rm -fr ${MPASDIR}
 git clone ${github_link} ${MPASDIR}
 if [ ! -d "${MPASDIR}" ]; then
-    echo "An error occurred while cloning you fork. Possible causes:  wrong URL, user or password."
+    echo "An error occurred while cloning your fork. Possible causes:  wrong URL, user or password."
     exit -1
 fi
 

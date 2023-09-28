@@ -1,6 +1,5 @@
 'reinit';'set display color white';'c'
 
-'set parea 1 9.5 1 7.5'
 
 'set gxout shaded'
 
@@ -27,5 +26,4 @@
 'draw title MPAS APCP+24h'
 
 'printim MPAS.png'
-
-return
+'quit'

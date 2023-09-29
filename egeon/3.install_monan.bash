@@ -46,7 +46,15 @@ if [ ! -d "${MPASDIR}" ]; then
 fi
 
 cd ${MPASDIR}
-git checkout -b develop
+
+branch_name="develop"
+if git checkout "$branch_name" 2>/dev/null; then
+    echo "Successfully checked out branch: $branch_name"
+else
+    echo "Failed to check out branch: $branch_name"
+    echo "Please check if you have this branch. Exiting ..."
+    exit -1
+fi
 
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script..."

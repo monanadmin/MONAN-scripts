@@ -5,6 +5,7 @@
     Grupo de Computação Científica (GCC)
     Divisão de Modelagem Numérica do Sistema Terrestre - DIMNT  
     Coordenação-Geral de Ciências da Terra - CGCT
+    gcc.dimnt@gmail.com
     
     2 de Outubro de 2023
 

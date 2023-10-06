@@ -82,6 +82,11 @@ sed -e "s,#RES#,${RES},g" \
        	${NMLDIR}/streams.init_atmosphere.STATIC \
 	> ${STATICPATH}/streams.init_atmosphere
 
+
+cores=32
+
+ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+
 #
 # make submission job
 #
@@ -90,23 +95,22 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=static
 #SBATCH --nodes=1              # Specify number of nodes
+#SBATCH --ntasks=${cores}             
+#SBATCH --tasks-per-node=${cores}     # Specify number of (MPI) tasks on each node
 #SBATCH --partition=batch
-#SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
 
-# Bind your OpenMP threads
-export OMP_NUM_THREADS=1
+executable=init_atmosphere_model
+
 ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
-export PMIX_MCA_gds=hash
 
-export NETCDF=/mnt/beegfs/monan/libs/netcdf
-export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
+cd ${BASEDIR}/../..
+. ${BASEDIR}/../../load_monan_app_modules.sh
 
-${BASEDIR}/../load_monan_app_modules.sh
 cd ${STATICPATH}
 
 echo  "STARTING AT \`date\` "
@@ -114,8 +118,7 @@ Start=\`date +%s.%N\`
 echo \$Start > ${STATICPATH}/Timing
 
 date
-mpirun -np 1 ./init_atmosphere_model
-
+time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -139,10 +142,10 @@ fi
 # clean up and remove links
 #
 
-mv log.init_atmosphere.0000.out ${STATICPATH}/logs
-mv Timing  ${STATICPATH}/logs
+#mv log.init_atmosphere.0000.out ${STATICPATH}/logs
+#mv Timing  ${STATICPATH}/logs
 
-find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
+#find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
 
 date
 exit 0

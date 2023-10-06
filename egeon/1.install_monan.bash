@@ -1,4 +1,6 @@
 #!/bin/bash
+#CR: TODO: inserir cabecalhos padronizados nos scripts
+#CR: TODO: retirar execessos de exports, eg: NETCDFDIR=, NETCDF= (do load_monan_app_modules.sh)
 
 if [ $# -ne 1 ]
 then
@@ -17,11 +19,8 @@ NETCDFDIR=/mnt/beegfs/monan/libs/netcdf
 PNETCDFDIR=/mnt/beegfs/monan/libs/PnetCDF
 # PIO isn't mandatory anymore in version v8, since included SMIOL lib substitute it
 PIODIR=
-
 GREEN='\033[1;32m'  # Green
 NC='\033[0m'        # No Color
-
-
 
 case ${version} in
    8) vlabel="v8.0.1";;

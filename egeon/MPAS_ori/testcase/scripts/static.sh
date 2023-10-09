@@ -46,7 +46,6 @@ fi
 #
 
 #CR: todo: later, change this fixed variable to dynamic variable:
-vlabel="v8.0.1"
 #---
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -54,7 +53,7 @@ DATADIR=${BASEDIR}/data
 TBLDIR=${BASEDIR}/tables
 NMLDIR=${BASEDIR}/namelist
 GEODATA=${BASEDIR}/data/WPS_GEOG/
-EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
+EXECFILEPATH=${BASEDIR}/../exec
 SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 

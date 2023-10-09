@@ -3,8 +3,8 @@
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
 export DIRMPAS_ORI=${DIRroot}/MPAS_ori
-export DIRMPASSRC=${DIRMPAS}/src
-export DIRMPASEXECS=${DIRMPAS}/src/convert_mpas
+export DIRMPASSRC=${DIRroot}/MPAS_src
+export DIRMPASEXECS=${DIRMPASSRC}/convert_mpas
 export DIRMPASSCRIPTS=${DIRMPAS}/testcase/scripts
 export DIRDADOS=/mnt/beegfs/monan/dados/MPAS_v8.0.1 
 
@@ -31,7 +31,7 @@ make  2>&1 | tee make.convert.output
 echo ""
 echo -e  "${GREEN}==>${NC} Initiating post processing...\n"
 
-# copy convert_mpas from MPAS/src to testcase
+# copy convert_mpas from MPAS src to testcase
 cd ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd
 rm -f ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/convert_mpas
 ln -s ${DIRMPASSRC}/convert_mpas/convert_mpas ${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd/

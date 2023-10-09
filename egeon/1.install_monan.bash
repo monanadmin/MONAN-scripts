@@ -27,7 +27,7 @@ case ${version} in
    7) vlabel="v7.3";;
    6) vlabel="v6.31";;
 esac
-MPASDIR=$(pwd)/MPAS/src/MPAS-Model_${vlabel}_egeon.gnu940
+MPASDIR=$(pwd)/MPAS_src/MPAS-Model_${vlabel}_egeon.gnu940
 
 
 echo ""
@@ -120,6 +120,9 @@ cp -f ${MPASDIR}/bin/build_tables ${MPASDIR}/
 
 if [ -e "${MPASDIR}/init_atmosphere_model" ] && [ -e "${MPASDIR}/atmosphere_model" ]; then
     echo "!!! Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR} !!!"
+else
+    echo "!!! An error occurred during build. Check output"
+    exit -1
 fi
 
 EOF
@@ -128,6 +131,6 @@ chmod a+x make.sh
 
 echo ""
 echo -e  "${GREEN}==>${NC} execute: the following to compile MPAS:"
-echo -e  "${GREEN}==>${NC} cd ${MPASDIR} && source make.sh && cd ../../.."
+echo -e  "${GREEN}==>${NC} cd ${MPASDIR} && source make.sh && cd ../.."
 echo ""
 

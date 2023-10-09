@@ -3,7 +3,6 @@
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
 export DIRMPAS_ORI=${DIRroot}/MPAS_ori  # will override scripts at MPAS
-export DIRMPASEXECS=${DIRMPAS}/src/MPAS-Model_${vlabel}_egeon.gnu940
 export DIRDADOS=/mnt/beegfs/monan/dados/MPAS_v8.0.1 
 export GREEN='\033[1;32m'  # Green
 export NC='\033[0m'        # No Color
@@ -13,13 +12,10 @@ export NC='\033[0m'        # No Color
 
 #----------------------------------
 
-
 mkdir -p ${DIRMPAS}/logs 
 mkdir -p ${DIRMPAS}/namelist 
-mkdir -p ${DIRMPAS}/src
 mkdir -p ${DIRMPAS}/tar
  
-
 
 echo ""
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"

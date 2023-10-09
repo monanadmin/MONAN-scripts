@@ -28,27 +28,31 @@ case ${version} in
    6) vlabel="v6.31";;
 esac
 MPASDIR=$(pwd)/MPAS_src/MPAS-Model_${vlabel}_egeon.gnu940
-
+MPAS_EXEC_DIR=$(pwd)/MPAS/exec
+mkdir -p ${MPAS_EXEC_DIR}
 
 echo ""
 echo -e  "${GREEN}==>${NC} Moduling environment..."
 
 ./load_monan_app_modules.sh
 
-echo ""
-echo -e  "${GREEN}==>${NC} Cloning repository..."
-rm -fr ${MPASDIR}
-git clone ${github_link} ${MPASDIR}
-if [ ! -d "${MPASDIR}" ]; then
-    echo "An error occurred while cloning your fork. Possible causes:  wrong URL, user or password."
-    exit -1
+if [ -d "${MPASDIR}" ]; then
+    echo -e  "${GREEN}==>${NC} \nSource dir already exists, updating it ..."
+else
+    echo -e  "${GREEN}==>${NC} \nCloning repository..."
+    git clone ${github_link} ${MPASDIR}
+    if [ ! -d "${MPASDIR}" ]; then
+        echo "An error occurred while cloning your fork. Possible causes:  wrong URL, user or password."
+        exit -1
+    fi
 fi
 
 cd ${MPASDIR}
 
 branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
-    echo "Successfully checked out branch: $branch_name"
+    git pull
+    echo "Successfully checked out and updated branch: $branch_name"
 else
     echo "Failed to check out branch: $branch_name"
     echo "Please check if you have this branch. Exiting ..."
@@ -114,12 +118,14 @@ make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=sin
 
 mv ${MPASDIR}/init_atmosphere_model ${MPASDIR}/bin/
 make clean CORE=init_atmosphere
-cp -f ${MPASDIR}/bin/init_atmosphere_model ${MPASDIR}/
-cp -f ${MPASDIR}/bin/atmosphere_model ${MPASDIR}/
-cp -f ${MPASDIR}/bin/build_tables ${MPASDIR}/
+cp -f ${MPASDIR}/bin/init_atmosphere_model ${MPAS_EXEC_DIR}/
+cp -f ${MPASDIR}/bin/atmosphere_model ${MPAS_EXEC_DIR}/
+cp -f ${MPASDIR}/bin/build_tables ${MPAS_EXEC_DIR}/
 
-if [ -e "${MPASDIR}/init_atmosphere_model" ] && [ -e "${MPASDIR}/atmosphere_model" ]; then
-    echo "!!! Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR} !!!"
+if [ -e "${MPAS_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MPAS_EXEC_DIR}/atmosphere_model" ]; then
+    echo ""
+    echo "Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR}/bin and copied tp ${MPAS_EXEC_DIR} !"
+    echo
 else
     echo "!!! An error occurred during build. Check output"
     exit -1

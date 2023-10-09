@@ -59,7 +59,6 @@ export HUGETLB_VERBOSE=0
 #
 # Caminhos
 #
-vlabel="v8.0.1"
 
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -74,10 +73,6 @@ TMPDIR=${BASEDIR}/TMP
 FIXDIR=${BASEDIR}/fix
 GEODIR=${DATADIR}/geog
 STCDIR=${DATADIR}/static
-
-# TODO - move exex to EXECPATH (below)
-EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
-
 EXECPATH=${BASEDIR}/../exec
 
 #
@@ -326,7 +321,7 @@ cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
 ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
 
 # executable
-ln -sf ${EXECFILEPATH}/init_atmosphere_model init_atmosphere_model
+ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
 
 JobName=ic_mpas
 
@@ -412,8 +407,7 @@ cd ${EXPDIR}
 JobName=MPAS.GNU        # Nome do Job
 cores=512
 
-#ln -sf ${EXEDIR}/atmosphere_model .
-ln -sf ${EXECFILEPATH}/atmosphere_model .
+ln -sf ${EXECPATH}/atmosphere_model .
 ln -sf ${TBLDIR}/* .
 
 if [ ${EXP} = "ERA5" ]; then

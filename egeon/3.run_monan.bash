@@ -7,5 +7,6 @@ export NC='\033[0m'        # No Color
 echo -e  "${GREEN}==>${NC} Submitting MPAS and waiting for finish before exit ... \n"
 echo -e  "sbatch ${DIRMPAS}/testcase/runs/ERA5/2021010100/mpas_exe.sh"
 sbatch --wait ${DIRMPAS}/testcase/runs/ERA5/2021010100/mpas_exe.sh
+# output files are already checked at mpas_exe.sh
 
 #CR: TODO: trazer o script de submissao do modelo para este script

@@ -209,8 +209,8 @@ echo \$Start > Timing.degrib
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
 
 # Load packges for WPS@GNU:
-spack load --only dependencies wps@4.3.1%gcc@9.4.0
-spack load --list
+#spack load --only dependencies wps@4.3.1%gcc@9.4.0
+#spack load --list
 
 ldd ungrib.exe
 
@@ -405,7 +405,7 @@ fi
 cd ${EXPDIR}
 
 JobName=MPAS.GNU        # Nome do Job
-cores=512
+cores=256
 
 ln -sf ${EXECPATH}/atmosphere_model .
 ln -sf ${TBLDIR}/* .
@@ -426,7 +426,7 @@ fi
 
 cat > mpas_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=8
+#SBATCH --nodes=4
 #SBATCH --ntasks=${cores}
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch

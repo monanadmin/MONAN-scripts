@@ -7,7 +7,11 @@ export DIRDADOS=/mnt/beegfs/monan/dados/MPAS_v8.0.1
 export GREEN='\033[1;32m'  # Green
 export NC='\033[0m'        # No Color
 ./load_monan_app_modules.sh
-#CR: TODO: unificar todos exports em load_monan_app_modules.sh
+
+
+# TODO list:
+# - CR: unificar todos exports em load_monan_app_modules.sh
+# - DE: Alterar script de modo a poder executar novamente com os diretórios limpos e não precisar baixar os dados novamente
 
 
 #----------------------------------
@@ -26,16 +30,20 @@ cp -rf ${DIRMPAS_ORI}/testcase/scripts/* ${DIRMPAS}/testcase/scripts/
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
+#tar -xzf ${DIRDADOS}/MPAS_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMPAS}
 
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMPAS}/testcase/scripts
 ${DIRMPAS}/testcase/scripts/static.sh ERA5 1024002
 
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
-#CR: TO DO: verificar arquivos de saida se foram gerados corretamente
 cd ${DIRMPAS}/testcase/runs/ERA5/static
 sbatch --wait make_static.sh
+
+if [ ! -e x1.1024002.static.nc ]; then
+  echo -e  "${GREEN}==>${NC} Static phase fails ! Check logs at ${DIRMPAS}/testcase/runs/ERA5/static/logs . Exiting script."
+  exit -1
+fi
 
 echo ""
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"

@@ -17,7 +17,9 @@ fi
 version="8"
 github_link=${1}
 
+#CR: TODO: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
 GREEN='\033[1;32m'  # Green
+RED='\033[1;31m'    # Red
 NC='\033[0m'        # No Color
 
 case ${version} in
@@ -53,7 +55,7 @@ else
     echo -e  "${GREEN}==>${NC} Cloning your fork repository...\n"
     git clone ${github_link} ${MPASDIR}
     if [ ! -d "${MPASDIR}" ]; then
-        echo "An error occurred while cloning your fork. Possible causes:  wrong URL, user or password.\n"
+        echo -e "${RED}==>${NC} An error occurred while cloning your fork. Possible causes:  wrong URL, user or password.\n"
         exit -1
     fi
 fi
@@ -63,10 +65,10 @@ cd ${MPASDIR}
 branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
-    echo "Successfully checked out and updated branch: $branch_name"
+    echo -e "${GREEN}==>${NC} Successfully checked out and updated branch: $branch_name"
 else
-    echo "Failed to check out branch: $branch_name"
-    echo "Please check if you have this branch. Exiting ..."
+    echo -e "${RED}==>${NC} Failed to check out branch: $branch_name"
+    echo -e "${RED}==>${NC} Please check if you have this branch. Exiting ..."
     exit -1
 fi
 
@@ -137,10 +139,10 @@ cp -f ${MPASDIR}/bin/build_tables ${MPAS_EXEC_DIR}/
 
 if [ -s "${MPAS_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MPAS_EXEC_DIR}/atmosphere_model" ]; then
     echo ""
-    echo "Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR}/bin and copied to ${MPAS_EXEC_DIR} !"
+    echo -e "${GREEN}==>${NC} Files init_atmosphere_model and atmosphere_model generated Successfully in ${MPASDIR}/bin and copied to ${MPAS_EXEC_DIR} !"
     echo
 else
-    echo "!!! An error occurred during build. Check output"
+    echo -e "${RED}==>${NC} !!! An error occurred during build. Check output"
     exit -1
 fi
 
@@ -185,10 +187,10 @@ cd ${DIRroot}
 
 if [ -s "${MPAS_EXEC_DIR}/convert_mpas" ] ; then
     echo ""
-    echo "File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MPAS_EXEC_DIR} !"
+    echo -e "${GREEN}==>${NC} File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MPAS_EXEC_DIR} !"
     echo
 else
-    echo "!!! An error occurred during convert_mpas build. Check output"
+    echo -e "${RED}==>${NC} !!! An error occurred during convert_mpas build. Check output"
     exit -1
 fi
 

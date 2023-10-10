@@ -48,6 +48,7 @@ echo -e  "${GREEN}==>${NC} Submiting degrib_exe.sh...\n"
 #CR: TO DO: verificar arquivos de saida se foram gerados corretamente
 mkdir -p ${HOME}/local/lib64
 cp -f /usr/lib64/libjasper.so* ${HOME}/local/lib64
+cp -f /usr/lib64/libjpeg.so* ${HOME}/local/lib64
 cd ${DIRMPAS}/testcase/runs/ERA5/2021010100/wpsprd/
 sbatch --wait degrib_exe.sh
 

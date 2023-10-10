@@ -1,7 +1,11 @@
 #!/bin/bash
-#CR: TODO: inserir cabecalhos padronizados nos scripts
-#CR: TODO: retirar execessos de exports, eg: NETCDFDIR=, NETCDF= (do load_monan_app_modules.sh)
-#EGK: NETCDFDIR e PNETCDFDIR obtidos de load_monan_app_modules.sh
+
+# TODO list:
+# - CR: inserir cabecalhos padronizados nos scripts
+# - CR: retirar execessos de exports, eg: NETCDFDIR=, NETCDF= (do load_monan_app_modules.sh)
+# - CR: todos os modules loads devem constar no load_monan_app_modules.sh
+# - CR: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
+# - EGK: NETCDFDIR e PNETCDFDIR obtidos de load_monan_app_modules.sh
 
 if [ $# -ne 1 ]
 then

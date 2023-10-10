@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# TODO list:
+# - CR: unificar todos exports em load_monan_app_modules.sh
+# - DE: Alterar script de modo a poder executar novamente com os diretórios limpos e não precisar baixar os dados novamente
+# - DE: Criar função para mensagem
+
 export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
 export DIRMPAS_ORI=${DIRroot}/MPAS_ori  # will override scripts at MPAS
@@ -8,11 +13,6 @@ export GREEN='\033[1;32m'  # Green
 export NC='\033[0m'        # No Color
 ./load_monan_app_modules.sh
 
-
-# TODO list:
-# - CR: unificar todos exports em load_monan_app_modules.sh
-# - DE: Alterar script de modo a poder executar novamente com os diretórios limpos e não precisar baixar os dados novamente
-# - DE: Criar função para mensagem
 
 #----------------------------------
 

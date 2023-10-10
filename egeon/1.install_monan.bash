@@ -1,6 +1,7 @@
 #!/bin/bash
 #CR: TODO: inserir cabecalhos padronizados nos scripts
 #CR: TODO: retirar execessos de exports, eg: NETCDFDIR=, NETCDF= (do load_monan_app_modules.sh)
+#EGK: NETCDFDIR e PNETCDFDIR obtidos de load_monan_app_modules.sh
 
 if [ $# -ne 1 ]
 then
@@ -15,10 +16,7 @@ fi
 
 version="8"
 github_link=${1}
-NETCDFDIR=/mnt/beegfs/monan/libs/netcdf
-PNETCDFDIR=/mnt/beegfs/monan/libs/PnetCDF
-# PIO isn't mandatory anymore in version v8, since included SMIOL lib substitute it
-PIODIR=
+
 GREEN='\033[1;32m'  # Green
 NC='\033[0m'        # No Color
 
@@ -27,19 +25,31 @@ case ${version} in
    7) vlabel="v7.3";;
    6) vlabel="v6.31";;
 esac
-MPASDIR=$(pwd)/MPAS_src/MPAS-Model_${vlabel}_egeon.gnu940
-MPAS_EXEC_DIR=$(pwd)/MPAS/exec
+
+export DIRroot=$(pwd)
+export MPAS_SRC_DIR=${DIRroot}/MPAS_src
+export MPASDIR=${MPAS_SRC_DIR}/MPAS-Model_${vlabel}_egeon.gnu940
+export CONVERT_MPAS_DIR=${MPAS_SRC_DIR}/convert_mpas
+export MPAS_EXEC_DIR=${DIRroot}/MPAS/exec
 mkdir -p ${MPAS_EXEC_DIR}
+mkdir -p ${MPAS_SRC_DIR}
+mkdir -p ${CONVERT_MPAS_DIR}
+
+# install init_atmosphere_model and atmosphere_model
 
 echo ""
-echo -e  "${GREEN}==>${NC} Moduling environment..."
+echo -e  "${GREEN}==>${NC} Moduling environment for MPAS model..."
 
-./load_monan_app_modules.sh
+cd ${DIRroot}
+. ${DIRroot}/load_monan_app_modules.sh
+
+export NETCDFDIR=${NETCDF}
+export PNETCDFDIR=${PNETCDF}
 
 if [ -d "${MPASDIR}" ]; then
     echo -e  "${GREEN}==>${NC} \nSource dir already exists, updating it ..."
 else
-    echo -e  "${GREEN}==>${NC} \nCloning repository..."
+    echo -e  "${GREEN}==>${NC} \nCloning your fork repository..."
     git clone ${github_link} ${MPASDIR}
     if [ ! -d "${MPASDIR}" ]; then
         echo "An error occurred while cloning your fork. Possible causes:  wrong URL, user or password."
@@ -94,11 +104,11 @@ cat << EOF > make.sh
 #    SHAREDLIB=true - generate position-independent code suitable for use in a shared library. Default is false.
 
 # TODO: call ./load_monan_app_modules.sh instead
-module purge
-module load ohpc
-module unload openmpi4
-module load mpich-4.0.2-gcc-9.4.0-gpof2pv
-module list
+#module purge
+#module load ohpc
+#module unload openmpi4
+#module load mpich-4.0.2-gcc-9.4.0-gpof2pv
+#module list
 
 export NETCDF=${NETCDFDIR}
 export PNETCDF=${PNETCDFDIR}
@@ -124,7 +134,7 @@ cp -f ${MPASDIR}/bin/build_tables ${MPAS_EXEC_DIR}/
 
 if [ -e "${MPAS_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MPAS_EXEC_DIR}/atmosphere_model" ]; then
     echo ""
-    echo "Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR}/bin and copied tp ${MPAS_EXEC_DIR} !"
+    echo "Files init_atmosphere_model and atmosphere_model generated Sucessfully in ${MPASDIR}/bin and copied to ${MPAS_EXEC_DIR} !"
     echo
 else
     echo "!!! An error occurred during build. Check output"
@@ -134,9 +144,48 @@ fi
 EOF
 chmod a+x make.sh
 
+echo ""
+echo -e  "${GREEN}==>${NC} Installing init_atmosphere_model and atmosphere_model..."
+echo ""
+
+cd ${MPASDIR}
+. ${MPASDIR}/make.sh
+cd ${DIRroot}
+
+
+# install convert_mpas
 
 echo ""
-echo -e  "${GREEN}==>${NC} execute: the following to compile MPAS:"
-echo -e  "${GREEN}==>${NC} cd ${MPASDIR} && source make.sh && cd ../.."
+echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas..."
+
+module purge
+module load gnu9/9.4.0
+module load ohpc
+module load phdf5
+module load netcdf
+module load netcdf-fortran
+module list
+
 echo ""
+echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository..."
+cd ${MPAS_SRC_DIR}
+git clone http://github.com/mgduda/convert_mpas.git
+cd ${CONVERT_MPAS_DIR}
+echo ""
+echo -e  "${GREEN}==>${NC} Installing convert_mpas..."
+make clean
+make  2>&1 | tee make.convert.output
+
+cp -f ${CONVERT_MPAS_DIR}/convert_mpas ${MPAS_EXEC_DIR}/
+
+cd ${DIRroot}
+
+if [ -e "${MPAS_EXEC_DIR}/convert_mpas" ] ; then
+    echo ""
+    echo "File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MPAS_EXEC_DIR} !"
+    echo
+else
+    echo "!!! An error occurred during convert_mpas build. Check output"
+    exit -1
+fi
 

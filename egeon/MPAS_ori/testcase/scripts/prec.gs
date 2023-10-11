@@ -21,7 +21,7 @@
 'set gxout contour'
 
 'cbar'
-'draw title MPAS APCP+24h'
+'draw title MONAN APCP+24h'
 
-'printim MPAS.png'
+'printim MONAN.png'
 'quit'

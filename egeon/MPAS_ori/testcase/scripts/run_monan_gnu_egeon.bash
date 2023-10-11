@@ -4,27 +4,27 @@
 #-----------------------------------------------------------------------------#
 #BOP
 #
-# !SCRIPT: run_mpas
+# !SCRIPT: run_monan
 #
 # !DESCRIPTION:
-#        Script para rodar o MPAS
+#        Script para rodar o MONAN
 #        Realiza as seguintes tarefas:
 #           o Ungrib os dados do GFS, ERA5
 #           o Interpola para grade do modelo
 #           o Cria condicao inicial e de fronteria
-#           o Integra o modelo MPAS
+#           o Integra o modelo MONAN
 #           o Pos-processamento (netcdf para grib2, regrid latlon, crop)
 #
 # !CALLING SEQUENCE:
 #     
-#        ./run_mpas_gnu.egeon EXP_NAME LABELI
+#        ./run_monan_gnu.egeon EXP_NAME LABELI
 #
 # For benchmark:
-#        ./run_mpas_gnu.egeon CFSR 2010102300
+#        ./run_monan_gnu.egeon CFSR 2010102300
 #
 # For ERA5 datasets
 #
-#        ./run_mpas_gnu.egeon ERA5 2021010100
+#        ./run_monan_gnu.egeon ERA5 2021010100
 #
 #           o EXP_NAME : Forcing: ERA5, CFSR, GFS, etc.
 #           o LABELI   : Initial: date 2015030600
@@ -32,8 +32,8 @@
 #
 # !REVISION HISTORY:
 # 30 sep 2022 - JPRF
-# 12 oct 2022 - GAM Group - MPAS on EGEON DELL cluster
-# 23 oct 2022 - GAM Group - MPAS benchmark on EGEON
+# 12 oct 2022 - GAM Group - MONAN on EGEON DELL cluster
+# 23 oct 2022 - GAM Group - MONAN benchmark on EGEON
 #
 # !REMARKS:
 #
@@ -42,7 +42,7 @@
 #EOC
 
 function usage(){
-   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_mpas_gnu.egeon | head -n -1
+   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.egeon | head -n -1
 }
 
 #
@@ -135,7 +135,7 @@ if [ ! -e ${EXPDIR} ]; then
    mkdir -p ${EXPDIR}
    mkdir -p ${EXPDIR}/logs
    mkdir -p ${EXPDIR}/scripts
-   mkdir -p ${EXPDIR}/mpasprd
+   mkdir -p ${EXPDIR}/monanprd
    mkdir -p ${EXPDIR}/wpsprd
    mkdir -p ${EXPDIR}/postprd
    cd ${EXPDIR}/postprd
@@ -181,7 +181,7 @@ export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 #
 # scripts
 #
-JobName=era4mpas
+JobName=era4monan
 
 cat > degrib_exe.sh << EOF0
 #!/bin/bash
@@ -301,7 +301,7 @@ chmod +x degrib_exe.sh
 
 ###############################################################################
 #
-#             Initial conditions (ANALYSIS/ERA5) for MPAS grid
+#             Initial conditions (ANALYSIS/ERA5) for MONAN grid
 #
 ###############################################################################
 
@@ -318,7 +318,7 @@ ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
 # executable
 ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
 
-JobName=ic_mpas
+JobName=ic_monan
 
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
@@ -385,7 +385,7 @@ fi
 
 cd ${EXPDIR}
 
-JobName=MPAS.GNU        # Nome do Job
+JobName=MONAN.GNU        # Nome do Job
 cores=256
 
 ln -sf ${EXECPATH}/atmosphere_model .
@@ -405,7 +405,7 @@ else
  ln -sf ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
 fi 
 
-cat > mpas_exe.sh <<EOF0
+cat > monan_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --nodes=4
 #SBATCH --ntasks=${cores}
@@ -413,8 +413,8 @@ cat > mpas_exe.sh <<EOF0
 #SBATCH --partition=batch
 #SBATCH --job-name=${JobName}
 #SBATCH --time=2:00:00         
-#SBATCH --output=${LOGDIR}/my_job_mpas.o%j   # File name for standard output
-#SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
+#SBATCH --output=${LOGDIR}/my_job_monan.o%j   # File name for standard output
+#SBATCH --error=${LOGDIR}/my_job_monan.e%j    # File name for standard error output
 
 export executable=atmosphere_model
 
@@ -441,7 +441,7 @@ echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
 if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
-    echo "An error running MPAS occurred. check logs folder"
+    echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
     exit -1
 fi
@@ -452,18 +452,18 @@ fi
 
 mv log.atmosphere.*.out ${LOGDIR}
 mv namelist.atmosphere ${EXPDIR}/scripts
-mv mpas_exe.sh ${EXPDIR}/scripts
+mv monan_exe.sh ${EXPDIR}/scripts
 mv stream* ${EXPDIR}/scripts
-mv x1.*.init.nc* ${EXPDIR}/mpasprd
-mv diag* ${EXPDIR}/mpasprd
-mv histor* ${EXPDIR}/mpasprd
-mv Timing ${LOGDIR}/Timing.MPAS
+mv x1.*.init.nc* ${EXPDIR}/monanprd
+mv diag* ${EXPDIR}/monanprd
+mv histor* ${EXPDIR}/monanprd
+mv Timing ${LOGDIR}/Timing.MONAN
 find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
 
 exit 0
 EOF0
 
-chmod +x mpas_exe.sh
+chmod +x monan_exe.sh
 
 exit 0
 

@@ -139,11 +139,9 @@ if [ ! -e ${EXPDIR} ]; then
    mkdir -p ${EXPDIR}/wpsprd
    mkdir -p ${EXPDIR}/postprd
    cd ${EXPDIR}/postprd
-   ln -sf ${EXEDIR}/convert_mpas .
    cp ${SCRDIR}/ngrid2latlon.sh .
    cp ${SCRDIR}/include* .          # choice only some variables
    cp ${SCRDIR}/target* .           # regrid for regions
-   cp ${BASEDIR}/GrADs/*.gs .       # example GrADs script 
    cp ${BASEDIR}/NCL/*.ncl .        # example NCL script
 fi
 #

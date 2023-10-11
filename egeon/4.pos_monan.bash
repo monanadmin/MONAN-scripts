@@ -8,8 +8,6 @@ export DIRroot=$(pwd)
 export DIRMPAS=${DIRroot}/MPAS
 export DIRMPAS_ORI=${DIRroot}/MPAS_ori
 export MPAS_EXEC_DIR=${DIRroot}/MPAS/exec
-#export DIRMPASSCRIPTS=${DIRMPAS}/testcase/scripts
-#export DIRDADOS=/mnt/beegfs/monan/dados/MPAS_v8.0.1 
 POST_DIR=${DIRMPAS}/testcase/runs/ERA5/2021010100/postprd
 LOG_FILE=${POST_DIR}/logs/pos.out
 

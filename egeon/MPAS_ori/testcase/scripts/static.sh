@@ -45,7 +45,6 @@ fi
 # Paths
 #
 
-#CR: todo: later, change this fixed variable to dynamic variable:
 #---
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -63,7 +62,7 @@ STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 #
 
 if [ ! -d ${STATICPATH} ]; then
- mkdir -p ${STATICPATH}/logs
+  mkdir -p ${STATICPATH}/logs
 fi
 
 cd ${STATICPATH}
@@ -141,13 +140,14 @@ fi
 # clean up and remove links
 #
 
-#mv log.init_atmosphere.0000.out ${STATICPATH}/logs
-#mv Timing  ${STATICPATH}/logs
+mv log.init_atmosphere.0000.out ${STATICPATH}/logs
+mv Timing  ${STATICPATH}/logs
 
-#find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
+find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
 
 date
 exit 0
 EOF0
 
 chmod +x ${STATICPATH}/make_static.sh
+

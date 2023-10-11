@@ -19,8 +19,6 @@
 
 'd pr25-pr1'
 'set gxout contour'
-*'d mslp/100'
-*'d skip(u10,20);v10'
 
 'cbar'
 'draw title MPAS APCP+24h'

@@ -189,7 +189,6 @@ cat > degrib_exe.sh << EOF0
 #SBATCH --nodes=1
 #SBATCH --partition=batch
 #SBATCH --tasks-per-node=1                      # ic for benchmark
-####SBATCH --ntasks=2048
 #SBATCH --time=00:30:00
 #SBATCH --output=${LOGDIR}/my_job_ungrib.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ungrib.e%j     # File name for standard error output
@@ -207,10 +206,6 @@ echo \$Start > Timing.degrib
 
 . ${DIRroot}/spack_wps/env_wps.sh
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
-
-# Load packges for WPS@GNU:
-#spack load --only dependencies wps@4.3.1%gcc@9.4.0
-#spack load --list
 
 ldd ungrib.exe
 
@@ -328,31 +323,22 @@ JobName=ic_mpas
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
-##SBATCH --nodes=1                         # depends on how many boundary files are available
-#####SBATCH --nodes=2                             # TESTE DENIS - erro de mem com mpich
+#SBATCH --nodes=1                         # depends on how many boundary files are available
 #SBATCH --partition=batch 
 #SBATCH --tasks-per-node=32               # only for benchmark
-#####SBATCH --tasks-per-node=16                   # TESTE DENIS - erro de OOM com mpich
-##SBATCH --time=${JobElapsedTime}
+#SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
 #
 
 export executable=init_atmosphere_model
 
-#export OMP_NUM_THREADS=1
 ulimit -c unlimited
 ulimit -v unlimited
 ulimit -s unlimited
 
-#export PMIX_MCA_gds=hash
-
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
-
-# Load packges for MPAS@GNU:
-#export NETCDF=/mnt/beegfs/monan/libs/netcdf
-#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
 cd ${EXPDIR}
 
@@ -360,12 +346,7 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing.InitAtmos
 
-#mpirun -n 32 ./init_atmosphere_model
 time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
-
-# Wait for all jobs to finish before exiting the job submission script
-
-#wait
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -437,35 +418,11 @@ cat > mpas_exe.sh <<EOF0
 
 export executable=atmosphere_model
 
-
-# mpich
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
 
-# intel
-#MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
-#export MKL_NUM_THREADS=1
-#export I_MPI_DEBUG=5
-#export MKL_DEBUG_CPU_TYPE=5
-#export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
-
-
-# openmpi
-#export PMIX_MCA_gds=hash
-#export OMPI_MCA_btl_openib_allow_ib=1
-#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
-#export PMIX_MCA_gds=hash
-
-
 # generic
 ulimit -s unlimited
-#export OMP_NUM_THREADS=1
-
-
-# Load packges for MPAS@GNU:
-#export NETCDF=/mnt/beegfs/monan/libs/netcdf
-#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
-
 
 cd ${EXPDIR}
 
@@ -475,7 +432,6 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-#time mpirun -np \$SLURM_NTASKS ./atmosphere_model
 time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 End=\`date +%s.%N\`

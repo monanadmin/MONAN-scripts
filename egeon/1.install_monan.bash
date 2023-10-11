@@ -110,14 +110,6 @@ cat << EOF > make.sh
 #    PRECISION=single - builds with default single-precision real kind. Default is to use double-precision.
 #    SHAREDLIB=true - generate position-independent code suitable for use in a shared library. Default is false.
 
-# TODO: call ./load_monan_app_modules.sh instead
-#module purge
-#module load ohpc
-#module unload openmpi4
-#module load mpich-4.0.2-gcc-9.4.0-gpof2pv
-#module list
-
-
 
 export NETCDF=${NETCDFDIR}
 export PNETCDF=${PNETCDFDIR}
@@ -166,7 +158,6 @@ cd ${DIRroot}
 
 echo ""
 echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
-#CR: TODO: todos os modules loads devem constar no load_monan_app_modules.sh 
 module purge
 module load gnu9/9.4.0
 module load ohpc

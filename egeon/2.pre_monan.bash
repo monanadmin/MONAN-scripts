@@ -8,7 +8,7 @@
 export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
-export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.0.1 
+export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
 export GREEN='\033[1;32m'  # Green
 export NC='\033[0m'        # No Color
 ./load_monan_app_modules.sh

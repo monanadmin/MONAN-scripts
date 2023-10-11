@@ -27,7 +27,7 @@ RED='\033[1;31m'    # Red
 NC='\033[0m'        # No Color
 
 case ${version} in
-   8) vlabel="v8.0.1";;
+   8) vlabel="v0.1.0";;
    7) vlabel="v7.3";;
    6) vlabel="v6.31";;
 esac

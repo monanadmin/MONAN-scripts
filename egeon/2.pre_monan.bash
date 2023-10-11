@@ -8,7 +8,7 @@
 export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
-export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v8.0.1 
+export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.0.1 
 export GREEN='\033[1;32m'  # Green
 export NC='\033[0m'        # No Color
 ./load_monan_app_modules.sh
@@ -30,7 +30,7 @@ cp -rf ${DIRMONAN_ORI}/testcase/scripts/* ${DIRMONAN}/testcase/scripts/
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-tar -xzf ${DIRDADOS}/MONAN_data_v1.0_ADDED_ERA5_INVARIANT.tgz -C ${DIRMONAN}
+tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMONAN}/testcase/scripts

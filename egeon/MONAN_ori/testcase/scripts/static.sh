@@ -45,8 +45,6 @@ fi
 # Paths
 #
 
-#CR: todo: later, change this fixed variable to dynamic variable:
-vlabel="v8.0.1"
 #---
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -54,7 +52,7 @@ DATADIR=${BASEDIR}/data
 TBLDIR=${BASEDIR}/tables
 NMLDIR=${BASEDIR}/namelist
 GEODATA=${BASEDIR}/data/WPS_GEOG/
-EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
+EXECFILEPATH=${BASEDIR}/../exec
 SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
@@ -64,7 +62,7 @@ STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 #
 
 if [ ! -d ${STATICPATH} ]; then
- mkdir -p ${STATICPATH}/logs
+  mkdir -p ${STATICPATH}/logs
 fi
 
 cd ${STATICPATH}
@@ -142,13 +140,14 @@ fi
 # clean up and remove links
 #
 
-#mv log.init_atmosphere.0000.out ${STATICPATH}/logs
-#mv Timing  ${STATICPATH}/logs
+mv log.init_atmosphere.0000.out ${STATICPATH}/logs
+mv Timing  ${STATICPATH}/logs
 
-#find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
+find ${STATICPATH} -maxdepth 1 -type l -exec rm -f {} \;
 
 date
 exit 0
 EOF0
 
 chmod +x ${STATICPATH}/make_static.sh
+

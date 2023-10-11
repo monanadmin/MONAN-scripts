@@ -33,18 +33,18 @@ case ${version} in
 esac
 
 export DIRroot=$(pwd)
-export MPAS_SRC_DIR=${DIRroot}/MPAS_src
-export MPASDIR=${MPAS_SRC_DIR}/MPAS-Model_${vlabel}_egeon.gnu940
-export CONVERT_MPAS_DIR=${MPAS_SRC_DIR}/convert_mpas
-export MPAS_EXEC_DIR=${DIRroot}/MPAS/exec
-mkdir -p ${MPAS_EXEC_DIR}
-mkdir -p ${MPAS_SRC_DIR}
+export MONAN_SRC_DIR=${DIRroot}/MONAN_src
+export MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_egeon.gnu940
+export CONVERT_MPAS_DIR=${MONAN_SRC_DIR}/convert_mpas
+export MONAN_EXEC_DIR=${DIRroot}/MONAN/exec
+mkdir -p ${MONAN_EXEC_DIR}
+mkdir -p ${MONAN_SRC_DIR}
 mkdir -p ${CONVERT_MPAS_DIR}
 
 # install init_atmosphere_model and atmosphere_model
 
 echo ""
-echo -e "${GREEN}==>${NC} Moduling environment for MPAS model...\n"
+echo -e "${GREEN}==>${NC} Moduling environment for MONAN model...\n"
 
 
 cd ${DIRroot}
@@ -53,18 +53,18 @@ cd ${DIRroot}
 export NETCDFDIR=${NETCDF}
 export PNETCDFDIR=${PNETCDF}
 
-if [ -d "${MPASDIR}" ]; then
+if [ -d "${MONANDIR}" ]; then
     echo -e  "${GREEN}==>${NC} Source dir already exists, updating it ...\n"
 else
     echo -e  "${GREEN}==>${NC} Cloning your fork repository...\n"
-    git clone ${github_link} ${MPASDIR}
-    if [ ! -d "${MPASDIR}" ]; then
+    git clone ${github_link} ${MONANDIR}
+    if [ ! -d "${MONANDIR}" ]; then
         echo -e "${RED}==>${NC} An error occurred while cloning your fork. Possible causes:  wrong URL, user or password.\n"
         exit -1
     fi
 fi
 
-cd ${MPASDIR}
+cd ${MONANDIR}
 
 branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
@@ -113,29 +113,29 @@ cat << EOF > make.sh
 
 export NETCDF=${NETCDFDIR}
 export PNETCDF=${PNETCDFDIR}
-# PIO is not necessary for version 8.* If PIO is empty, MPAS will use SMIOL
+# PIO is not necessary for version 8.* If PIO is empty, MPAS Will use SMIOL
 export PIO=
 
 make clean CORE=atmosphere
 make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
 
-mkdir ${MPASDIR}/bin
-mv ${MPASDIR}/atmosphere_model ${MPASDIR}/bin/
-mv ${MPASDIR}/build_tables ${MPASDIR}/bin/
+mkdir ${MONANDIR}/bin
+mv ${MONANDIR}/atmosphere_model ${MONANDIR}/bin/
+mv ${MONANDIR}/build_tables ${MONANDIR}/bin/
 make clean CORE=atmosphere
 
 make clean CORE=init_atmosphere
 make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
 
-mv ${MPASDIR}/init_atmosphere_model ${MPASDIR}/bin/
+mv ${MONANDIR}/init_atmosphere_model ${MONANDIR}/bin/
 make clean CORE=init_atmosphere
-cp -f ${MPASDIR}/bin/init_atmosphere_model ${MPAS_EXEC_DIR}/
-cp -f ${MPASDIR}/bin/atmosphere_model ${MPAS_EXEC_DIR}/
-cp -f ${MPASDIR}/bin/build_tables ${MPAS_EXEC_DIR}/
+cp -f ${MONANDIR}/bin/init_atmosphere_model ${MONAN_EXEC_DIR}/
+cp -f ${MONANDIR}/bin/atmosphere_model ${MONAN_EXEC_DIR}/
+cp -f ${MONANDIR}/bin/build_tables ${MONAN_EXEC_DIR}/
 
-if [ -s "${MPAS_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MPAS_EXEC_DIR}/atmosphere_model" ]; then
+if [ -s "${MONAN_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MONAN_EXEC_DIR}/atmosphere_model" ]; then
     echo ""
-    echo -e "${GREEN}==>${NC} Files init_atmosphere_model and atmosphere_model generated Successfully in ${MPASDIR}/bin and copied to ${MPAS_EXEC_DIR} !"
+    echo -e "${GREEN}==>${NC} Files init_atmosphere_model and atmosphere_model generated Successfully in ${MONANDIR}/bin and copied to ${MONAN_EXEC_DIR} !"
     echo
 else
     echo -e "${RED}==>${NC} !!! An error occurred during build. Check output"
@@ -149,8 +149,8 @@ echo ""
 echo -e  "${GREEN}==>${NC} Installing init_atmosphere_model and atmosphere_model...\n"
 echo ""
 
-cd ${MPASDIR}
-. ${MPASDIR}/make.sh
+cd ${MONANDIR}
+. ${MONANDIR}/make.sh
 cd ${DIRroot}
 
 
@@ -168,7 +168,7 @@ module list
 
 echo ""
 echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository...\n"
-cd ${MPAS_SRC_DIR}
+cd ${MONAN_SRC_DIR}
 git clone http://github.com/mgduda/convert_mpas.git
 cd ${CONVERT_MPAS_DIR}
 echo ""
@@ -176,13 +176,13 @@ echo -e  "${GREEN}==>${NC} Installing convert_mpas...\n"
 make clean
 make  2>&1 | tee make.convert.output
 
-cp -f ${CONVERT_MPAS_DIR}/convert_mpas ${MPAS_EXEC_DIR}/
+cp -f ${CONVERT_MPAS_DIR}/convert_mpas ${MONAN_EXEC_DIR}/
 
 cd ${DIRroot}
 
-if [ -s "${MPAS_EXEC_DIR}/convert_mpas" ] ; then
+if [ -s "${MONAN_EXEC_DIR}/convert_mpas" ] ; then
     echo ""
-    echo -e "${GREEN}==>${NC} File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MPAS_EXEC_DIR} !"
+    echo -e "${GREEN}==>${NC} File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MONAN_EXEC_DIR} !"
     echo
 else
     echo -e "${RED}==>${NC} !!! An error occurred during convert_mpas build. Check output"

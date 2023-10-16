@@ -45,8 +45,6 @@ fi
 # Paths
 #
 
-#CR: todo: later, change this fixed variable to dynamic variable:
-vlabel="v8.0.1"
 #---
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -54,7 +52,7 @@ DATADIR=${BASEDIR}/data
 TBLDIR=${BASEDIR}/tables
 NMLDIR=${BASEDIR}/namelist
 GEODATA=${BASEDIR}/data/WPS_GEOG/
-EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
+EXECFILEPATH=${BASEDIR}/../exec
 SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
@@ -64,7 +62,7 @@ STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 #
 
 if [ ! -d ${STATICPATH} ]; then
- mkdir -p ${STATICPATH}/logs
+  mkdir -p ${STATICPATH}/logs
 fi
 
 cd ${STATICPATH}
@@ -82,6 +80,11 @@ sed -e "s,#RES#,${RES},g" \
        	${NMLDIR}/streams.init_atmosphere.STATIC \
 	> ${STATICPATH}/streams.init_atmosphere
 
+
+cores=32
+
+ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+
 #
 # make submission job
 #
@@ -90,23 +93,22 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=static
 #SBATCH --nodes=1              # Specify number of nodes
+#SBATCH --ntasks=${cores}             
+#SBATCH --tasks-per-node=${cores}     # Specify number of (MPI) tasks on each node
 #SBATCH --partition=batch
-#SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
 
-# Bind your OpenMP threads
-export OMP_NUM_THREADS=1
+executable=init_atmosphere_model
+
 ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
-export PMIX_MCA_gds=hash
 
-export NETCDF=/mnt/beegfs/monan/libs/netcdf
-export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
+cd ${BASEDIR}/../..
+. ${BASEDIR}/../../load_monan_app_modules.sh
 
-${BASEDIR}/../load_monan_app_modules.sh
 cd ${STATICPATH}
 
 echo  "STARTING AT \`date\` "
@@ -114,8 +116,7 @@ Start=\`date +%s.%N\`
 echo \$Start > ${STATICPATH}/Timing
 
 date
-mpirun -np 1 ./init_atmosphere_model
-
+time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -149,3 +150,4 @@ exit 0
 EOF0
 
 chmod +x ${STATICPATH}/make_static.sh
+

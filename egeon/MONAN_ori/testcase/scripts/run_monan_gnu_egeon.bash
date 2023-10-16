@@ -4,27 +4,27 @@
 #-----------------------------------------------------------------------------#
 #BOP
 #
-# !SCRIPT: run_mpas
+# !SCRIPT: run_monan
 #
 # !DESCRIPTION:
-#        Script para rodar o MPAS
+#        Script para rodar o MONAN
 #        Realiza as seguintes tarefas:
 #           o Ungrib os dados do GFS, ERA5
 #           o Interpola para grade do modelo
 #           o Cria condicao inicial e de fronteria
-#           o Integra o modelo MPAS
+#           o Integra o modelo MONAN
 #           o Pos-processamento (netcdf para grib2, regrid latlon, crop)
 #
 # !CALLING SEQUENCE:
 #     
-#        ./run_mpas_gnu.egeon EXP_NAME LABELI
+#        ./run_monan_gnu.egeon EXP_NAME LABELI
 #
 # For benchmark:
-#        ./run_mpas_gnu.egeon CFSR 2010102300
+#        ./run_monan_gnu.egeon CFSR 2010102300
 #
 # For ERA5 datasets
 #
-#        ./run_mpas_gnu.egeon ERA5 2021010100
+#        ./run_monan_gnu.egeon ERA5 2021010100
 #
 #           o EXP_NAME : Forcing: ERA5, CFSR, GFS, etc.
 #           o LABELI   : Initial: date 2015030600
@@ -32,8 +32,8 @@
 #
 # !REVISION HISTORY:
 # 30 sep 2022 - JPRF
-# 12 oct 2022 - GAM Group - MPAS on EGEON DELL cluster
-# 23 oct 2022 - GAM Group - MPAS benchmark on EGEON
+# 12 oct 2022 - GAM Group - MONAN on EGEON DELL cluster
+# 23 oct 2022 - GAM Group - MONAN benchmark on EGEON
 #
 # !REMARKS:
 #
@@ -42,7 +42,7 @@
 #EOC
 
 function usage(){
-   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_mpas_gnu.egeon | head -n -1
+   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.egeon | head -n -1
 }
 
 #
@@ -59,7 +59,6 @@ export HUGETLB_VERBOSE=0
 #
 # Caminhos
 #
-vlabel="v8.0.1"
 
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
@@ -74,10 +73,6 @@ TMPDIR=${BASEDIR}/TMP
 FIXDIR=${BASEDIR}/fix
 GEODIR=${DATADIR}/geog
 STCDIR=${DATADIR}/static
-
-# TODO - move exex to EXECPATH (below)
-EXECFILEPATH=${BASEDIR}/../src/MPAS-Model_${vlabel}_egeon.gnu940
-
 EXECPATH=${BASEDIR}/../exec
 
 #
@@ -140,15 +135,13 @@ if [ ! -e ${EXPDIR} ]; then
    mkdir -p ${EXPDIR}
    mkdir -p ${EXPDIR}/logs
    mkdir -p ${EXPDIR}/scripts
-   mkdir -p ${EXPDIR}/mpasprd
+   mkdir -p ${EXPDIR}/monanprd
    mkdir -p ${EXPDIR}/wpsprd
    mkdir -p ${EXPDIR}/postprd
    cd ${EXPDIR}/postprd
-   ln -sf ${EXEDIR}/convert_mpas .
    cp ${SCRDIR}/ngrid2latlon.sh .
    cp ${SCRDIR}/include* .          # choice only some variables
    cp ${SCRDIR}/target* .           # regrid for regions
-   cp ${BASEDIR}/GrADs/*.gs .       # example GrADs script 
    cp ${BASEDIR}/NCL/*.ncl .        # example NCL script
 fi
 #
@@ -186,7 +179,7 @@ export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 #
 # scripts
 #
-JobName=era4mpas
+JobName=era4monan
 
 cat > degrib_exe.sh << EOF0
 #!/bin/bash
@@ -194,7 +187,6 @@ cat > degrib_exe.sh << EOF0
 #SBATCH --nodes=1
 #SBATCH --partition=batch
 #SBATCH --tasks-per-node=1                      # ic for benchmark
-####SBATCH --ntasks=2048
 #SBATCH --time=00:30:00
 #SBATCH --output=${LOGDIR}/my_job_ungrib.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ungrib.e%j     # File name for standard error output
@@ -212,10 +204,6 @@ echo \$Start > Timing.degrib
 
 . ${DIRroot}/spack_wps/env_wps.sh
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
-
-# Load packges for WPS@GNU:
-spack load --only dependencies wps@4.3.1%gcc@9.4.0
-spack load --list
 
 ldd ungrib.exe
 
@@ -311,7 +299,7 @@ chmod +x degrib_exe.sh
 
 ###############################################################################
 #
-#             Initial conditions (ANALYSIS/ERA5) for MPAS grid
+#             Initial conditions (ANALYSIS/ERA5) for MONAN grid
 #
 ###############################################################################
 
@@ -326,38 +314,29 @@ cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
 ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
 
 # executable
-ln -sf ${EXECFILEPATH}/init_atmosphere_model init_atmosphere_model
+ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
 
-JobName=ic_mpas
+JobName=ic_monan
 
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
-##SBATCH --nodes=1                         # depends on how many boundary files are available
-#####SBATCH --nodes=2                             # TESTE DENIS - erro de mem com mpich
+#SBATCH --nodes=1                         # depends on how many boundary files are available
 #SBATCH --partition=batch 
 #SBATCH --tasks-per-node=32               # only for benchmark
-#####SBATCH --tasks-per-node=16                   # TESTE DENIS - erro de OOM com mpich
-##SBATCH --time=${JobElapsedTime}
+#SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
 #
 
 export executable=init_atmosphere_model
 
-#export OMP_NUM_THREADS=1
 ulimit -c unlimited
 ulimit -v unlimited
 ulimit -s unlimited
 
-#export PMIX_MCA_gds=hash
-
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
-
-# Load packges for MPAS@GNU:
-#export NETCDF=/mnt/beegfs/monan/libs/netcdf
-#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
 
 cd ${EXPDIR}
 
@@ -365,12 +344,7 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing.InitAtmos
 
-#mpirun -n 32 ./init_atmosphere_model
 time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
-
-# Wait for all jobs to finish before exiting the job submission script
-
-#wait
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -409,11 +383,10 @@ fi
 
 cd ${EXPDIR}
 
-JobName=MPAS.GNU        # Nome do Job
-cores=512
+JobName=MONAN.GNU        # Nome do Job
+cores=256
 
-#ln -sf ${EXEDIR}/atmosphere_model .
-ln -sf ${EXECFILEPATH}/atmosphere_model .
+ln -sf ${EXECPATH}/atmosphere_model .
 ln -sf ${TBLDIR}/* .
 
 if [ ${EXP} = "ERA5" ]; then
@@ -430,48 +403,24 @@ else
  ln -sf ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
 fi 
 
-cat > mpas_exe.sh <<EOF0
+cat > monan_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=8
+#SBATCH --nodes=4
 #SBATCH --ntasks=${cores}
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch
 #SBATCH --job-name=${JobName}
 #SBATCH --time=2:00:00         
-#SBATCH --output=${LOGDIR}/my_job_mpas.o%j   # File name for standard output
-#SBATCH --error=${LOGDIR}/my_job_mpas.e%j    # File name for standard error output
+#SBATCH --output=${LOGDIR}/my_job_monan.o%j   # File name for standard output
+#SBATCH --error=${LOGDIR}/my_job_monan.e%j    # File name for standard error output
 
 export executable=atmosphere_model
 
-
-# mpich
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
 
-# intel
-#MPI_PARAMS="-iface ib0 -bind-to core -map-by core"
-#export MKL_NUM_THREADS=1
-#export I_MPI_DEBUG=5
-#export MKL_DEBUG_CPU_TYPE=5
-#export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
-
-
-# openmpi
-#export PMIX_MCA_gds=hash
-#export OMPI_MCA_btl_openib_allow_ib=1
-#export OMPI_MCA_btl_openib_if_include="mlx5_0:1"
-#export PMIX_MCA_gds=hash
-
-
 # generic
 ulimit -s unlimited
-#export OMP_NUM_THREADS=1
-
-
-# Load packges for MPAS@GNU:
-#export NETCDF=/mnt/beegfs/monan/libs/netcdf
-#export PNETCDF=/mnt/beegfs/monan/libs/PnetCDF
-
 
 cd ${EXPDIR}
 
@@ -481,7 +430,6 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start >  ${EXPDIR}/Timing
 
-#time mpirun -np \$SLURM_NTASKS ./atmosphere_model
 time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 
 End=\`date +%s.%N\`
@@ -491,10 +439,11 @@ echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
 if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
-    echo "An error running MPAS occurred. check logs folder"
+    echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
     exit -1
 fi
+echo -e  "Script \${0} completed. \n"
   
 #
 # move dataout, clean up and remove files/links
@@ -502,18 +451,18 @@ fi
 
 mv log.atmosphere.*.out ${LOGDIR}
 mv namelist.atmosphere ${EXPDIR}/scripts
-mv mpas_exe.sh ${EXPDIR}/scripts
+mv monan_exe.sh ${EXPDIR}/scripts
 mv stream* ${EXPDIR}/scripts
-mv x1.*.init.nc* ${EXPDIR}/mpasprd
-mv diag* ${EXPDIR}/mpasprd
-mv histor* ${EXPDIR}/mpasprd
-mv Timing ${LOGDIR}/Timing.MPAS
+mv x1.*.init.nc* ${EXPDIR}/monanprd
+mv diag* ${EXPDIR}/monanprd
+mv histor* ${EXPDIR}/monanprd
+mv Timing ${LOGDIR}/Timing.MONAN
 find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
 
 exit 0
 EOF0
 
-chmod +x mpas_exe.sh
+chmod +x monan_exe.sh
 
 exit 0
 

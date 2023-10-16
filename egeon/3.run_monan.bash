@@ -16,3 +16,5 @@ echo -e  "sbatch ${DIRMONAN}/testcase/runs/ERA5/2021010100/monan_exe.sh"
 sbatch --wait ${DIRMONAN}/testcase/runs/ERA5/2021010100/monan_exe.sh
 # output files are checked at monan_exe.sh
 
+echo -e "${GREEN}==>${NC} Please, check the output log files at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs to be sure that MONAN ended successfully. \n"
+echo -e "${GREEN}==>${NC} Script ${0} completed. \n"

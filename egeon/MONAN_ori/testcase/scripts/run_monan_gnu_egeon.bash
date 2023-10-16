@@ -443,6 +443,7 @@ if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
     exit -1
 fi
+echo -e  "Script \${0} completed. \n"
   
 #
 # move dataout, clean up and remove files/links

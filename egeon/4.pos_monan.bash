@@ -12,6 +12,7 @@ POST_DIR=${DIRMONAN}/testcase/runs/ERA5/2021010100/postprd
 LOG_FILE=${POST_DIR}/logs/pos.out
 
 export GREEN='\033[1;32m'  # Green
+export RED='\033[1;31m' # Red
 export NC='\033[0m'        # No Color
 
 module load netcdf 
@@ -43,13 +44,14 @@ cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
 files_pos=("mean.nc" "wind+pw_sfc.nc" "surface.nc" "include_fields" "prec.gs" "MONAN.png")
 for file in "${files_pos[@]}"; do
   if [[ ! -e "$file" ]]; then
-    echo -e  "\n${GREEN}==>${NC} ***** ATTENTION *****\n"         
-    echo -e  "${GREEN}==>${NC} Post fails ! At least the file ${file} was not generated at ${POST_DIR} \n"
-    echo -e  "${GREEN}==>${NC} Check ${LOG_FILE} . Exiting script. \n"
+    echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"         
+    echo -e  "${RED}==>${NC} Post fails ! At least the file ${file} was not generated at ${POST_DIR} \n"
+    echo -e  "${RED}==>${NC} Check ${LOG_FILE} . Exiting script. \n"
     exit -1
   fi
 done
 
-echo -e  "${GREEN}==>${NC} Post executed successfully! Log file: ${LOG_FILE} . End of script. \n"
+echo -e  "${GREEN}==>${NC}  Script ${0} completed. \n"
+echo -e  "${GREEN}==>${NC}  Log file: ${LOG_FILE} . End of script. \n"
 
 exit

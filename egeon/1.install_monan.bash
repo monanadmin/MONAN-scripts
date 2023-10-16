@@ -189,3 +189,4 @@ else
     exit -1
 fi
 
+echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"

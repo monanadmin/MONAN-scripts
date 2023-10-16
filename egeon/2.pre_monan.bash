@@ -10,6 +10,7 @@ export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
 export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
 export GREEN='\033[1;32m'  # Green
+export RED='\033[1;31m'    # Red
 export NC='\033[0m'        # No Color
 ./load_monan_app_modules.sh
 
@@ -43,8 +44,8 @@ cd ${DIRMONAN}/testcase/runs/ERA5/static
 sbatch --wait make_static.sh
 
 if [ ! -e x1.1024002.static.nc ]; then
-  echo -e  "\n${GREEN}==>${NC} ***** ATTENTION *****\n"	
-  echo -e  "${GREEN}==>${NC} Static phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/static/logs . Exiting script. \n"
+  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
+  echo -e  "${RED}==>${NC} Static phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/static/logs . Exiting script. \n"
   exit -1
 fi
 
@@ -66,9 +67,9 @@ sbatch --wait degrib_exe.sh
 files_ungrib=("LSM:1979-01-01_00" "GEO:1979-01-01_00" "FILE:2021-01-01_00" "FILE2:2021-01-01_00" "FILE3:2021-01-01_00")
 for file in "${files_ungrib[@]}"; do
   if [[ ! -e "${file}" ]]; then
-    echo -e  "\n${GREEN}==>${NC} ***** ATTENTION *****\n"	  
-    echo -e  "${GREEN}==>${NC} Degrib fails ! At least the file ${file} was not generated at ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/. \n"
-    echo -e  "${GREEN}==>${NC} Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script. \n"
+    echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	  
+    echo -e  "${RED}==>${NC} Degrib fails ! At least the file ${file} was not generated at ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/. \n"
+    echo -e  "${RED}==>${NC} Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script. \n"
     exit -1
   fi
 done
@@ -80,9 +81,11 @@ cd ${DIRMONAN}/testcase/runs/ERA5/2021010100
 sbatch --wait InitAtmos_exe.sh
 
 if [ ! -e x1.1024002.init.nc ]; then
-  echo -e  "\n${GREEN}==>${NC} ***** ATTENTION *****\n"	
-  echo -e  "${GREEN}==>${NC} Init Atmosphere phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script.\n"
+  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
+  echo -e  "${RED}==>${NC} Init Atmosphere phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script.\n"
   exit -1
 fi
+
+echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"
 
 exit

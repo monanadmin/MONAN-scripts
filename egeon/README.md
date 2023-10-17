@@ -6,6 +6,7 @@
 ## History:
 
 v0.1.0 - Workshop version
+
 v0.2.1 - This version
  - Eliminating spack and WPS compilation
  - Reducing number of scripts and extra steps

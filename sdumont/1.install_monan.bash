@@ -75,7 +75,7 @@ else
     echo -e "${RED}==>${NC} Please check if you have this branch. Exiting ..."
     exit -1
 fi
-
+exit
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script...\n"
 cat << EOF > make.sh

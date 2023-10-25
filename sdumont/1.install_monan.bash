@@ -75,7 +75,7 @@ else
     echo -e "${RED}==>${NC} Please check if you have this branch. Exiting ..."
     exit -1
 fi
-exit
+
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script...\n"
 cat << EOF > make.sh
@@ -148,7 +148,7 @@ chmod a+x make.sh
 echo ""
 echo -e  "${GREEN}==>${NC} Installing init_atmosphere_model and atmosphere_model...\n"
 echo ""
-
+exit
 cd ${MONANDIR}
 . ${MONANDIR}/make.sh
 cd ${DIRroot}

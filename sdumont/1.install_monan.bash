@@ -154,18 +154,10 @@ cd ${MONANDIR}
 cd ${DIRroot}
 
 
-# install convert_mpas
-#CR: [SD-334-QI]: aprei aqui. proximo passo ajustar os modules abaixo para instalar o convert_mpas:
-exit
 echo ""
 echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
-module purge
-module load gnu9/9.4.0
-module load ohpc
-module load phdf5
-module load netcdf
-module load netcdf-fortran
-module list
+
+. load_convertmpas_modules.sh
 
 echo ""
 echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository...\n"

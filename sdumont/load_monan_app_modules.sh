@@ -1,4 +1,5 @@
-#module purge
+module purge
+export MODULEPATH=/usr/share/Modules/modulefiles:/etc/modulefiles:/scratch/app/modulos
 module load sequana/current
 module load openmpi/gnu/4.1.4_sequana
 module load pnetcdf/1.10_openmpi-2.0_gnu_sequana

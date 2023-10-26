@@ -119,7 +119,7 @@ export PIO=
 make clean CORE=atmosphere
 make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
 
-mkdir ${MONANDIR}/bin
+mkdir -p ${MONANDIR}/bin
 mv ${MONANDIR}/atmosphere_model ${MONANDIR}/bin/
 mv ${MONANDIR}/build_tables ${MONANDIR}/bin/
 make clean CORE=atmosphere
@@ -148,14 +148,15 @@ chmod a+x make.sh
 echo ""
 echo -e  "${GREEN}==>${NC} Installing init_atmosphere_model and atmosphere_model...\n"
 echo ""
-exit
+
 cd ${MONANDIR}
 . ${MONANDIR}/make.sh
 cd ${DIRroot}
 
 
 # install convert_mpas
-
+#CR: [SD-334-QI]: aprei aqui. proximo passo ajustar os modules abaixo para instalar o convert_mpas:
+exit
 echo ""
 echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
 module purge

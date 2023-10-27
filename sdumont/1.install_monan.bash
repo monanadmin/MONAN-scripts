@@ -34,7 +34,7 @@ esac
 
 export DIRroot=$(pwd)
 export MONAN_SRC_DIR=${DIRroot}/MONAN_src
-export MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_egeon.gnu940
+export MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_sdumont.gnu
 export CONVERT_MPAS_DIR=${MONAN_SRC_DIR}/convert_mpas
 export MONAN_EXEC_DIR=${DIRroot}/MONAN/exec
 mkdir -p ${MONAN_EXEC_DIR}

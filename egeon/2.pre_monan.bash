@@ -24,7 +24,8 @@ mkdir -p ${DIRMONAN}/tar
 
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
-tar -xzf ${DIRDADOS}/MONAN_testcase.v1.0.tgz -C ${DIRroot}
+#CR: O nome do arquivo ${DIRDADOS}/MONAN_testcase.v1.0.tgz foi padronizado para ${DIRDADOS}/MONAN_testcase_v1.0.tgz (trocou-se ponto por underline). Mas ainda existe um link com nome antigo para que funcione, mas eh necessario corrigir isso em todas branchs e remover o link.
+tar -xzf ${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
 
 echo -e  "${GREEN}==>${NC} Copyings scripts from MONAN_ori to MONAN testcase script folders... \n"
 cp -rf ${DIRMONAN_ORI}/testcase/scripts/* ${DIRMONAN}/testcase/scripts/

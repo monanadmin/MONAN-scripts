@@ -95,7 +95,7 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #SBATCH --nodes=1              # Specify number of nodes
 #SBATCH --ntasks=${cores}             
 #SBATCH --tasks-per-node=${cores}     # Specify number of (MPI) tasks on each node
-#SBATCH --partition=batch
+#SBATCH --partition=cptec
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output

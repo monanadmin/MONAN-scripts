@@ -54,11 +54,14 @@ export NETCDFDIR=${NETCDF}
 export PNETCDFDIR=${PNETCDF}
 
 if [ -d "${MONANDIR}" ]; then
+    echo ""
     echo -e  "${GREEN}==>${NC} Source dir already exists, updating it ...\n"
 else
+    echo ""
     echo -e  "${GREEN}==>${NC} Cloning your fork repository...\n"
     git clone ${github_link} ${MONANDIR}
     if [ ! -d "${MONANDIR}" ]; then
+        echo ""
         echo -e "${RED}==>${NC} An error occurred while cloning your fork. Possible causes:  wrong URL, user or password.\n"
         exit -1
     fi
@@ -69,8 +72,10 @@ cd ${MONANDIR}
 branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
+    echo ""
     echo -e "${GREEN}==>${NC} Successfully checked out and updated branch: $branch_name"
 else
+    echo ""
     echo -e "${RED}==>${NC} Failed to check out branch: $branch_name"
     echo -e "${RED}==>${NC} Please check if you have this branch. Exiting ..."
     exit -1

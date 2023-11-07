@@ -26,7 +26,7 @@ mkdir -p ${DIRMONAN}/tar
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 # Temporariamente, enquanto desenv:----------------------------------------------v
-wget ${FTPADD}/${DIRDADOS}/MONAN_testcase.v1.0.tgz 
+wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
 tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
 if [ ! -s /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 

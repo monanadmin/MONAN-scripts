@@ -26,9 +26,9 @@ mkdir -p ${DIRMONAN}/tar
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 # Temporariamente, enquanto desenv:----------------------------------------------v
-#wget ${FTPADD}/${DIRDADOS}/MONAN_testcase.v1.0.tgz 
+wget ${FTPADD}/${DIRDADOS}/MONAN_testcase.v1.0.tgz 
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
-#tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
+tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
 if [ ! -s /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
 then
    echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz"
@@ -46,10 +46,10 @@ echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
 #CR: TODO: inserir opcao "timestamping" no wget:  baixa o arq somente sei verificar que o arq ja existe no dir local. (testar)
 
 # Temporariamente, enquanto desenv:----------------------------------------------v
-#wget ${FTPADD}/${DIRDADOS}/MONAN_data_v1.0.tgz
+wget ${FTPADD}/${DIRDADOS}/MONAN_data_v1.0.tgz
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
 #CR: TODO: incluir o dir MONAN dentro do tar MONAN_data_v1.0.tgz para fim de padronizacao.
-#tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 if [ ! -s /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz ] 
 then
    echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz"
@@ -73,8 +73,6 @@ cd ${DIRMONAN}/testcase/scripts
 ${DIRMONAN}/testcase/scripts/static.sh ERA5 1024002
 
 
-#CR: paramos aqui (CR+BIDU):
-exit
 
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
 cd ${DIRMONAN}/testcase/runs/ERA5/static
@@ -86,7 +84,8 @@ if [ ! -e x1.1024002.static.nc ]; then
   exit -1
 fi
 
-
+#CR: paramos aqui (CR+BIDU):
+exit
 
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"
 cd ${DIRMONAN}/testcase/scripts

@@ -13,7 +13,7 @@ export FTPADD=http://ftp.cptec.inpe.br
 export GREEN='\033[1;32m'  # Green
 export RED='\033[1;31m'    # Red
 export NC='\033[0m'        # No Color
-./load_monan_app_modules.sh
+. ./load_monan_app_modules.sh
 
 
 #----------------------------------
@@ -26,15 +26,15 @@ mkdir -p ${DIRMONAN}/tar
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 # Temporariamente, enquanto desenv:----------------------------------------------v
-wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
+#wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
-tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
+#tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
 if [ ! -s /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
 then
    echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz"
    exit
 fi
-#tar -xzf /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
+tar -xzf /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
 # Temporariamente, enquanto desenv:----------------------------------------------^
 
 
@@ -46,25 +46,25 @@ echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
 #CR: TODO: inserir opcao "timestamping" no wget:  baixa o arq somente sei verificar que o arq ja existe no dir local. (testar)
 
 # Temporariamente, enquanto desenv:----------------------------------------------v
-wget ${FTPADD}/${DIRDADOS}/MONAN_data_v1.0.tgz
+#wget ${FTPADD}/${DIRDADOS}/MONAN_data_v1.0.tgz
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
 #CR: TODO: incluir o dir MONAN dentro do tar MONAN_data_v1.0.tgz para fim de padronizacao.
-tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+#tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 if [ ! -s /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz ] 
 then
    echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz"
    exit
 fi
-#tar -xzf /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
-#PID=$!
-#i=1
-#sp="/-\|"
-#echo -n ' '
-#while [ -d /proc/$PID ]
-#do
-#   sleep 0.1
-#   printf "\b${sp:i++%${#sp}:1}"
-#done
+tar -xzf /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
+PID=$!
+i=1
+sp="/-\|"
+echo -n ' '
+while [ -d /proc/$PID ]
+do
+   sleep 0.1
+   printf "\b${sp:i++%${#sp}:1}"
+done
 # Temporariamente, enquanto desenv:----------------------------------------------^
 
 

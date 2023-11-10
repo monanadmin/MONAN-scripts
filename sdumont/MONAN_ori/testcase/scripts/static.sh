@@ -116,7 +116,8 @@ Start=\`date +%s.%N\`
 echo \$Start > ${STATICPATH}/Timing
 
 date
-time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
+#time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
+time mpirun -np \$SLURM_NTASKS ./\${executable}
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

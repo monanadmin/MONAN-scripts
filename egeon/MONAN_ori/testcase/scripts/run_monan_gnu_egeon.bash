@@ -523,17 +523,17 @@ cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
 # move dataout, clean up and remove files/links
 #
 
-echo -e  "Moving dataout, cleaning up and removing files/links...\n" >> ${LOG_FILE} 2>&1
-
-mv ${EXPDIR}/namelist.atmosphere ${EXPDIR}/scripts
-mv ${EXPDIR}/monan_exe.sh ${EXPDIR}/scripts
-mv ${EXPDIR}/stream* ${EXPDIR}/scripts
-find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
-# EGK: TODO Are the copies above needed?
-#cp -f  ${EXPDIR}/postprd/PostAtmos_exe.sh ${EXPDIR}/scripts
-#cp -f  ${EXPDIR}/postprd/include_fields ${EXPDIR}/scripts
-#cp -f  ${EXPDIR}/postprd/prec.gs ${EXPDIR}/scripts
-#cp -f  ${EXPDIR}/postprd/ngrid2latlon.sh ${EXPDIR}/scripts
+#echo -e  "Moving dataout, cleaning up and removing files/links...\n" >> ${LOG_FILE} 2>&1
+#
+#mv ${EXPDIR}/namelist.atmosphere ${EXPDIR}/scripts
+#mv ${EXPDIR}/monan_exe.sh ${EXPDIR}/scripts
+#mv ${EXPDIR}/stream* ${EXPDIR}/scripts
+#find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
+## EGK: TODO Are the copies above needed?
+##cp -f  ${EXPDIR}/postprd/PostAtmos_exe.sh ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/include_fields ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/prec.gs ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/ngrid2latlon.sh ${EXPDIR}/scripts
 
 exit 0
 EOF0

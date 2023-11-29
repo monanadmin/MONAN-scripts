@@ -56,6 +56,9 @@ EXECFILEPATH=${BASEDIR}/../exec
 SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
+# CR+BIDU: enquanto desenv: de 32 para 4
+cores=4
+. ${BASEDIR}/../../load_monan_app_modules.sh
 
 #
 # Criando diretorio dados Estaticos
@@ -81,13 +84,13 @@ sed -e "s,#RES#,${RES},g" \
 	> ${STATICPATH}/streams.init_atmosphere
 
 
-cores=32
-
 ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 
 #
 # make submission job
 #
+
+
 
 cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
@@ -95,7 +98,7 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #SBATCH --nodes=1              # Specify number of nodes
 #SBATCH --ntasks=${cores}             
 #SBATCH --tasks-per-node=${cores}     # Specify number of (MPI) tasks on each node
-#SBATCH --partition=cptec
+#SBATCH --partition=${INIT_ATM_PART}
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
@@ -106,7 +109,6 @@ ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
 
-cd ${BASEDIR}/../..
 . ${BASEDIR}/../../load_monan_app_modules.sh
 
 cd ${STATICPATH}

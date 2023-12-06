@@ -74,6 +74,7 @@ FIXDIR=${BASEDIR}/fix
 GEODIR=${DATADIR}/geog
 STCDIR=${DATADIR}/static
 EXECPATH=${BASEDIR}/../exec
+DIRMONAN=${DIRroot}/MONAN
 
 #
 # pegando argumentos
@@ -138,11 +139,6 @@ if [ ! -e ${EXPDIR} ]; then
    mkdir -p ${EXPDIR}/monanprd
    mkdir -p ${EXPDIR}/wpsprd
    mkdir -p ${EXPDIR}/postprd
-   cd ${EXPDIR}/postprd
-   cp ${SCRDIR}/ngrid2latlon.sh .
-   cp ${SCRDIR}/include* .          # choice only some variables
-   cp ${SCRDIR}/target* .           # regrid for regions
-   cp ${BASEDIR}/NCL/*.ncl .        # example NCL script
 fi
 #
 
@@ -202,7 +198,6 @@ Start=\`date +%s.%N\`
 echo \$Start > Timing.degrib
 #
 
-. ${DIRroot}/spack_wps/env_wps.sh
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
 
 ldd ungrib.exe
@@ -351,10 +346,9 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing.InitAtmos
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing.InitAtmos
 
- mv Timing.InitAtmos log.*.out ${LOGDIR}
- mv namelist.init* streams.init* ${EXPDIR}/scripts
- mv InitAtmos_exe.sh ${EXPDIR}/scripts
-
+mv Timing.InitAtmos log.*.out ${LOGDIR}
+mv namelist.init* streams.init* ${EXPDIR}/scripts
+mv InitAtmos_exe.sh ${EXPDIR}/scripts
 
 date
 exit 0
@@ -450,21 +444,30 @@ echo -e  "Script \${0} completed. \n"
 #
 
 mv log.atmosphere.*.out ${LOGDIR}
-mv namelist.atmosphere ${EXPDIR}/scripts
-mv monan_exe.sh ${EXPDIR}/scripts
-mv stream* ${EXPDIR}/scripts
-mv x1.*.init.nc* ${EXPDIR}/monanprd
+mv log.atmosphere.*.err ${LOGDIR}
+cp -f namelist.atmosphere ${EXPDIR}/scripts
+cp -f monan_exe.sh ${EXPDIR}/scripts
+cp -f stream* ${EXPDIR}/scripts
+mv x1.*.init.nc ${EXPDIR}/monanprd
+ln -sf ${EXPDIR}/monanprd/x1.1024002.init.nc ${EXPDIR}
 mv diag* ${EXPDIR}/monanprd
 mv histor* ${EXPDIR}/monanprd
 mv Timing ${LOGDIR}/Timing.MONAN
-find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
+#find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
+#rm -f namelist.atmosphere
+#rm -f monan_exe.sh
+#rm -f streams*
+#if [ ! -e "${EXPDIR}/monanprd/x1.1024002.init.nc" ]; then
+#    cp -f x1.*.init.nc* ${EXPDIR}/monanprd
+#fi
+
 
 exit 0
 EOF0
 
-chmod +x monan_exe.sh
+###############################################################
 
-exit 0
+chmod +x monan_exe.sh
 
 #######################################################################
 #
@@ -472,9 +475,70 @@ exit 0
 #
 #######################################################################
 
-cd ${EXPDIR}/postprd
+#
+# Configuring post-processing
+#
+
+# EGK: TODO change this export location
+export LOG_FILE=${EXPDIR}/postprd/logs/pos.out
+
+# copy convert_mpas from MONAN/exec to testcase
+rm -f ${EXPDIR}/postprd/convert_mpas
+ln -s ${EXECPATH}/convert_mpas ${EXPDIR}/postprd
+
+# copy from repository to testcase
+cp ${SCRDIR}/prec.gs ${EXPDIR}/postprd/prec.gs
+cp ${SCRDIR}/ngrid2latlon.sh ${EXPDIR}/postprd/ngrid2latlon.sh
+cp ${SCRDIR}/include* ${EXPDIR}/postprd/.          # choice only some variables
+cp ${SCRDIR}/target* ${EXPDIR}/postprd/.           # regrid for regions
+cp ${BASEDIR}/NCL/*.ncl ${EXPDIR}/postprd/.        # example NCL script
+
+# creating log dir
+mkdir -p ${EXPDIR}/postprd/logs
 
 #
 
+cd ${EXPDIR}/postprd
+
+cat > PostAtmos_exe.sh <<EOF0
+#!/bin/bash
+
+module load netcdf 
+module load netcdf-fortran 
+module load cdo-2.0.4-gcc-9.4.0-bjulvnd
+module load opengrads-2.2.1
+
+rm -f ${LOG_FILE} 
+echo -e  "Executing post processing...\n" >> ${LOG_FILE} 2>&1
+
+# runs /ngrid2latlon.sh
+${EXPDIR}/postprd/ngrid2latlon.sh >> ${LOG_FILE} 2>&1
+
+# runs prec.gs
+grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
+
+cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
+
+#
+# move dataout, clean up and remove files/links
+#
+
+#echo -e  "Moving dataout, cleaning up and removing files/links...\n" >> ${LOG_FILE} 2>&1
+#
+#mv ${EXPDIR}/namelist.atmosphere ${EXPDIR}/scripts
+#mv ${EXPDIR}/monan_exe.sh ${EXPDIR}/scripts
+#mv ${EXPDIR}/stream* ${EXPDIR}/scripts
+#find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
+## EGK: TODO Are the copies above needed?
+##cp -f  ${EXPDIR}/postprd/PostAtmos_exe.sh ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/include_fields ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/prec.gs ${EXPDIR}/scripts
+##cp -f  ${EXPDIR}/postprd/ngrid2latlon.sh ${EXPDIR}/scripts
+
 exit 0
+EOF0
+
+chmod +x PostAtmos_exe.sh
+
+exit
 

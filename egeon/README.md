@@ -5,7 +5,7 @@
 
 ## History:
 
-[v0.2.2](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.2_QuickStart.pdf) - Improvement in step 4 for multiple executions
+[v0.2.2](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.2_QuickStart.pdf) - Improvement in step 3 and 4 for multiple executions
 
 [v0.2.1](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.1_QuickStart.pdf) - Corrections after DIMNT Workshop
  - Eliminating spack and WPS compilation

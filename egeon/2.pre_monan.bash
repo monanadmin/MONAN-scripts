@@ -25,14 +25,14 @@ mkdir -p ${DIRMONAN}/tar
 
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
-#tar -xzf ${DIRDADOS}/MONAN_testcase.v1.0.tgz -C ${DIRroot} --checkpoint=.100
+tar -xzf ${DIRDADOS}/MONAN_testcase.v1.0.tgz -C ${DIRroot} --checkpoint=.100
 
 echo -e  "\n\n${GREEN}==>${NC} Copyings scripts from MONAN_ori to MONAN testcase script folders... \n"
 cp -rf ${DIRMONAN_ORI}/testcase/scripts/* ${DIRMONAN}/testcase/scripts/
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-#tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN} --checkpoint=.1000
+tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN} --checkpoint=.1000
 
 echo -e  "\n\n${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMONAN}/testcase/scripts
@@ -42,7 +42,7 @@ ${DIRMONAN}/testcase/scripts/static.sh ERA5 1024002
 
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
 cd ${DIRMONAN}/testcase/runs/ERA5/static
-#sbatch --wait make_static.sh
+sbatch --wait make_static.sh
 
 if [ ! -s x1.1024002.static.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
@@ -63,7 +63,7 @@ mkdir -p ${HOME}/local/lib64
 cp -f /usr/lib64/libjasper.so* ${HOME}/local/lib64
 cp -f /usr/lib64/libjpeg.so* ${HOME}/local/lib64
 cd ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/
-#sbatch --wait degrib_exe.sh
+sbatch --wait degrib_exe.sh
 
 files_ungrib=("LSM:1979-01-01_00" "GEO:1979-01-01_00" "FILE:2021-01-01_00" "FILE2:2021-01-01_00" "FILE3:2021-01-01_00")
 for file in "${files_ungrib[@]}"; do
@@ -79,7 +79,7 @@ done
 
 echo -e  "${GREEN}==>${NC} Submiting InitAtmos_exe.sh...\n"
 cd ${DIRMONAN}/testcase/runs/ERA5/2021010100
-#sbatch --wait InitAtmos_exe.sh
+sbatch --wait InitAtmos_exe.sh
 
 if [ ! -s x1.1024002.init.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	

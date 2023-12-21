@@ -186,6 +186,7 @@ cat > degrib_exe.sh << EOF0
 #SBATCH --time=00:30:00
 #SBATCH --output=${LOGDIR}/my_job_ungrib.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ungrib.e%j     # File name for standard error output
+
 #
 ulimit -s unlimited
 ulimit -c unlimited
@@ -322,6 +323,7 @@ cat > InitAtmos_exe.sh <<EOF0
 #SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
+#SBATCH --exclusive
 #
 
 export executable=init_atmosphere_model

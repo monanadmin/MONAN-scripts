@@ -6,6 +6,8 @@
 # - CR: todos os modules loads devem constar no load_monan_app_modules.sh
 # - CR: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
 # - EGK: NETCDFDIR e PNETCDFDIR obtidos de load_monan_app_modules.sh
+# - CR: modificar este script para compilar numa segunda vez sem precisar baixar tudo novamente e garantir atualizacao dos streams.lists*
+
 
 if [ $# -ne 1 ]
 then
@@ -133,7 +135,7 @@ cp -f ${MONANDIR}/bin/init_atmosphere_model ${MONAN_EXEC_DIR}/
 cp -f ${MONANDIR}/bin/atmosphere_model ${MONAN_EXEC_DIR}/
 cp -f ${MONANDIR}/bin/build_tables ${MONAN_EXEC_DIR}/
 
-if [ -s "${MONAN_EXEC_DIR}/init_atmosphere_model" ] && [ -e "${MONAN_EXEC_DIR}/atmosphere_model" ]; then
+if [ -s "${MONAN_EXEC_DIR}/init_atmosphere_model" ] && [ -s "${MONAN_EXEC_DIR}/atmosphere_model" ]; then
     echo ""
     echo -e "${GREEN}==>${NC} Files init_atmosphere_model and atmosphere_model generated Successfully in ${MONANDIR}/bin and copied to ${MONAN_EXEC_DIR} !"
     echo

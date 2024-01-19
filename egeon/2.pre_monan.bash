@@ -6,9 +6,10 @@
 # - DE: Criar função para mensagem
 
 export DIRroot=$(pwd)
+export DATA_VERSION="0.2.2"
 export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
-export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
+export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v${DATA_VERSION} 
 export GREEN='\033[1;32m'  # Green
 export RED='\033[1;31m'    # Red
 export NC='\033[0m'        # No Color
@@ -21,17 +22,28 @@ mkdir -p ${DIRMONAN}/logs
 mkdir -p ${DIRMONAN}/namelist 
 mkdir -p ${DIRMONAN}/tar
 
+if [ ! -d "${DIRMONAN}/testcase" ]; then
 
+  mkdir -p ${DIRMONAN}/testcase/scripts
+  echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
+  tar -xzf ${DIRDADOS}/MONAN_testcase_v${DATA_VERSION}.tgz -C ${DIRroot}
 
-echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
-tar -xzf ${DIRDADOS}/MONAN_testcase.v1.0.tgz -C ${DIRroot}
+  echo -e  "${GREEN}==>${NC} Copyings scripts from MONAN_ori to MONAN testcase script folders... \n"
+  cp -rf ${DIRMONAN_ORI}/testcase/scripts/* ${DIRMONAN}/testcase/scripts/
 
-echo -e  "${GREEN}==>${NC} Copyings scripts from MONAN_ori to MONAN testcase script folders... \n"
-cp -rf ${DIRMONAN_ORI}/testcase/scripts/* ${DIRMONAN}/testcase/scripts/
+else
+  echo -e  "${GREEN}==>${NC} WARNING: All testcase data from repository at ${DIRMONAN_ORI}/testcase/scripts and all testcase data from ${DIRDADOS}/MONAN_testcase.v${DATA_VERSION}.tgz will not be updated at working folder ${DIRMONAN}. Remove ${DIRMONAN}/testcase folder to update.\n"
+fi
 
-echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
-echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+if [ ! -d "${DIRMONAN}/data" ]; then
+
+  echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
+  echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
+  tar -xzf ${DIRDADOS}/MONAN_data_v${DATA_VERSION}.tgz -C ${DIRMONAN}
+
+else
+  echo -e  "${GREEN}==>${NC} WARNING: All data from ${DIRDADOS}/MONAN_data_v${DATA_VERSION}.tgz will not be updated at dir ${DIRMONAN}/data . Delete ${DIRMONAN}/data folder to update.\n"
+fi
 
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMONAN}/testcase/scripts

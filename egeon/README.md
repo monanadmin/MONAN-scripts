@@ -1,6 +1,6 @@
 # MONAN - Model for Ocean-laNd-Atmosphere PredictioN
 
-### *Quick Start for Egeon version 0.2.1*
+### *MONAN Quick Start for developers. Scripts for prepare, install and run MONAN on Egeon cluster - version 0.2.1*
 
 
 ## History:

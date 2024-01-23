@@ -82,7 +82,7 @@ mkdir -p ${DIRMONAN}/tar
 
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
-#tar -xzf ${DIRDADOS}/MONAN_testcase_GFS.v1.0.tgz -C ${DIRroot}
+tar -xzf ${DIRDADOS}/MONAN_testcase_GFS.v1.0.tgz -C ${DIRroot}
 
 echo -e  "${GREEN}==>${NC} Copyings scripts from repository to MONAN testcase script folders... \n"
 cp -rf ${DIRMONAN_SCR}/* ${DIRMONAN}/testcase/scripts/
@@ -96,17 +96,17 @@ cp -rf ${DIRMONAN_NCL}/* ${DIRMONAN}/testcase/NCL/
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
 #tar -xzf ${DIRDADOS}/MONAN_data_GFS_v1.0.tgz -C ${DIRMONAN}
-#tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMONAN}/testcase/scripts
-#${DIRMONAN}/testcase/scripts/static.sh ${EXP} ${RES}
+${DIRMONAN}/testcase/scripts/static.sh ${EXP} ${RES}
 
 
 
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/static
-#sbatch --wait make_static.sh
+sbatch --wait make_static.sh
 
 if [ ! -e x1.${RES}.static.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
@@ -118,7 +118,7 @@ fi
 
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"
 cd ${DIRMONAN}/testcase/scripts
-#${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${LABELI}
+${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${LABELI}
 
 
 
@@ -127,7 +127,7 @@ mkdir -p ${HOME}/local/lib64
 cp -f /usr/lib64/libjasper.so* ${HOME}/local/lib64
 cp -f /usr/lib64/libjpeg.so* ${HOME}/local/lib64
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/wpsprd/
-#sbatch --wait degrib_exe.sh
+sbatch --wait degrib_exe.sh
 
 files_ungrib=("${EXP}:${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}")
 for file in "${files_ungrib[@]}"; do
@@ -143,7 +143,7 @@ done
 
 echo -e  "${GREEN}==>${NC} Submiting InitAtmos_exe.sh...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}
-#sbatch --wait InitAtmos_exe.sh
+sbatch --wait InitAtmos_exe.sh
 
 if [ ! -e x1.${RES}.init.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
@@ -155,7 +155,7 @@ fi
 echo -e  "${GREEN}==>${NC} Submitting MONAN and waiting for finish before exit ... \n"
 echo -e  "${GREEN}==>${NC} Logs being generated at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs ... \n"
 echo -e  "sbatch ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh"
-#sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
+sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
 # output files are checked at monan_exe.sh
 
 echo -e "${GREEN}==>${NC} Please, check the output log files at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs to be sure that MONAN ended successfully. \n"

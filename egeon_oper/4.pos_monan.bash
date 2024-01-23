@@ -6,7 +6,7 @@
 
 export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
-POST_DIR=${DIRMONAN}/testcase/runs/GFS/2021060100/postprd
+POST_DIR=${DIRMONAN}/testcase/runs/GFS/2024010100/postprd
 LOG_FILE=${POST_DIR}/logs/pos.out
 
 export GREEN='\033[1;32m'  # Green

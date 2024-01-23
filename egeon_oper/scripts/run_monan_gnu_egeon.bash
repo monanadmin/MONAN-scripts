@@ -84,11 +84,6 @@ LABELI=${2}; start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:
 
 EXPDIR=${RUNDIR}/${EXP}/${LABELI}
 LOGDIR=${EXPDIR}/logs
-#DIRLATLON=${EXPDIR}/output
-
-#if [ ! -d ${DIRLATLON} ]; then
-# mkdir -p ${DIRLATLON}
-#fi
 
 #
 # Initial Conditions: 
@@ -99,9 +94,11 @@ LOGDIR=${EXPDIR}/logs
 #
 USERDATA=${EXP}
 
-OPERDIR=${BASEDIR}/data/${USERDATA}
+#OPERDIR=${BASEDIR}/data/${USERDATA}
+OPERDIR=/oper/dados/ioper/tempo/${USERDATA}
 
-BNDDIR=$OPERDIR/${LABELI:0:10}
+#BNDDIR=$OPERDIR/${LABELI:0:10}
+BNDDIR=$OPERDIR/0p25/brutos/${LABELI:0:4}/${LABELI:4:2}/${LABELI:6:2}/${LABELI:8:2}
 
 echo $BNDDIR
 
@@ -150,8 +147,6 @@ cd ${EXPDIR}
 #
 ##############################################################################
 
-#if [ ${EXP} = "ERA5" ]; then
-if [ ${EXP} = "GFS" ]; then
 
 ln -sf ${BASEDIR}/runs/${EXP}/static/*.nc .
 
@@ -168,7 +163,10 @@ cp ${SCRDIR}/link_grib.csh .
 
 ln -sf ${EXECPATH}/ungrib.exe                    .
 
-ln -sf ${BNDDIR}/*.grib2 .
+#ln -sf ${BNDDIR}/*.grib2 .
+#ln -sf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
+# EGK: entender por que o link simbolico da operacaonao funciona, precisa ser copia para a conta do usuario
+cp -rf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
 
 #ln -sf ${BNDDIR}/*.grb .
 
@@ -209,58 +207,23 @@ ldd ungrib.exe
 cd $EXPDIR/wpsprd
 
 if [ -e namelist.wps ]; then rm -f namelist.wps; fi
-##
-## invariant variables [ONLY FOR BENCHMARK]
-##
-## LSM
-##
-#sed -e "s,#LABELI#,1979-01-01_00:00:00,g;s,#PREFIX#,LSM,g" \
-#	${NMLDIR}/namelist.wps.TEMPLATE > ./namelist.wps
-#
-#./link_grib.csh \
-#	e5.oper.invariant.128_172_lsm.ll025sc.1979010100_1979010100.grb
-#
-#
-#mpirun -np 1 ./ungrib.exe
-#mv ungrib.log ungrib.lsm.log
-#
-##
-## SOILGHT
-## 
-#rm -f namelist.wps
-#
-#sed -e "s,#LABELI#,1979-01-01_00:00:00,g;s,#PREFIX#,GEO,g" \
-#	${NMLDIR}/namelist.wps.TEMPLATE > ./namelist.wps
-#
-#rm -f GRIBFILE.AAA
-#./link_grib.csh \
-#	e5.oper.invariant.128_129_z.ll025sc.1979010100_1979010100.grb
-#
-#mpirun -np 1 ./ungrib.exe
-#mv ungrib.log ungrib.geo.log
 
 #
 # Now surface and upper air atmospheric variables
 #
 rm GRIBFILE.* namelist.wps
 
-#sed -e "s,#LABELI#,${start_date},g;s,#PREFIX#,FILE,g" \
-#
-
 sed -e "s,#LABELI#,${start_date},g;s,#PREFIX#,GFS,g" \
 	${NMLDIR}/namelist.wps.TEMPLATE > ./namelist.wps
 
-#./link_grib.csh e5.oper.an.*.grb
-./link_grib.csh gfs.t00z.pgrb2.0p25.f000.*.grib2
+./link_grib.csh gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2
 
 mpirun -np 1 ./ungrib.exe
 
 echo ${start_date:0:13}
 
-#cat FILE\:${start_date:0:13} LSM\:1979-01-01_00 > FILE2:${start_date:0:13}
-#cat FILE2\:${start_date:0:13} GEO\:1979-01-01_00 > FILE3:${start_date:0:13}
-
 rm -f GRIBFILE.*
+rm -f gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
@@ -364,16 +327,10 @@ date
 exit 0
 EOF0
 
+###############################################################
+
 chmod +x InitAtmos_exe.sh
 
-else
-
-echo "Benchmark CFSR 2010102300 15 km"
-ln -sf ${BNDDIR}/x1.* .
-ln -sf ${NMLDIR}/namelist.atmosphere.BENCH namelist.atmosphere
-ln -sf ${NMLDIR}/streams.atmosphere.BENCH streams.atmosphere
-
-fi
 
 ###############################################################################
 #
@@ -444,15 +401,14 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
-#if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
-if [ ! -e "${EXPDIR}/diag.2021-06-02_00.00.00.nc" ]; then
+if [ ! -e "${EXPDIR}/diag.2024-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
     exit -1
 fi
-echo -e  "Script \${0} completed. \n"
-  
+
+
 #
 # move dataout, clean up and remove files/links
 #
@@ -482,6 +438,7 @@ EOF0
 ###############################################################
 
 chmod +x monan_exe.sh
+
 
 #######################################################################
 #
@@ -537,7 +494,7 @@ cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
 # move dataout, clean up and remove files/links
 #
 
-#echo -e  "Moving dataout, cleaning up and removing files/links...\n" >> ${LOG_FILE} 2>&1
+#echo -e  "Moving dataout, cleaning up and removing files/links...\n" >> ${EXPDIR}/logs/pos.out 2>&1
 #
 #mv ${EXPDIR}/namelist.atmosphere ${EXPDIR}/scripts
 #mv ${EXPDIR}/monan_exe.sh ${EXPDIR}/scripts
@@ -549,10 +506,12 @@ cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
 ##cp -f  ${EXPDIR}/postprd/prec.gs ${EXPDIR}/scripts
 ##cp -f  ${EXPDIR}/postprd/ngrid2latlon.sh ${EXPDIR}/scripts
 
+
 exit 0
 EOF0
 
 chmod +x PostAtmos_exe.sh
+
 
 exit
 

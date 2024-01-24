@@ -60,17 +60,20 @@ LABELI=${3}
 
 #----------------------------------
 
-export DIRroot=$(pwd)
-export DIRMONAN=${DIRroot}/MONAN
-export DIRMONAN_SCR=${DIRroot}/scripts  # will override scripts at MONAN
-export DIRMONAN_NML=${DIRroot}/namelist  # will override namelist at MONAN
-export DIRMONAN_NCL=${DIRroot}/scripts/NCL  # will override NCL at MONAN
-export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
-export GREEN='\033[1;32m'  # Green
-export RED='\033[1;31m'    # Red
-export NC='\033[0m'        # No Color
-./load_monan_app_modules.sh
+. ./load_monan_app_modules.sh
 
+  datai=${LABELI}
+  echo ${datai}
+
+  hh=${datai:8:2}
+
+  # soma 24 horas de previsao - pode ser modificado dependendo da entrada das horas de previsao (aqui FST=24)
+  dataf=`date -d "${datai:0:8} ${hh}:00 24 hours" +"%Y%m%d%H"`
+
+  echo
+  echo ${dataf}
+
+export dataf=`date -d "${datai:0:8} ${hh}:00 24 hours" +"%Y%m%d%H"`
 
 #----------------------------------
 
@@ -95,7 +98,6 @@ cp -rf ${DIRMONAN_NCL}/* ${DIRMONAN}/testcase/NCL/
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-#tar -xzf ${DIRDADOS}/MONAN_data_GFS_v1.0.tgz -C ${DIRMONAN}
 tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"

@@ -57,26 +57,6 @@ fi
 export HUGETLB_VERBOSE=0
 
 #
-# Caminhos
-#
-
-HSTMAQ=$(hostname)
-BASEDIR=$(dirname $(pwd))
-RUNDIR=${BASEDIR}/runs
-DATADIR=${BASEDIR}/data
-EXEDIR=${BASEDIR}/bin
-TBLDIR=${BASEDIR}/tables
-NMLDIR=${BASEDIR}/namelist
-SCRDIR=${BASEDIR}/scripts
-GEODATA=${BASEDIR}/data/WPS_GEOG/
-TMPDIR=${BASEDIR}/TMP
-FIXDIR=${BASEDIR}/fix
-GEODIR=${DATADIR}/geog
-STCDIR=${DATADIR}/static
-EXECPATH=${BASEDIR}/../exec
-DIRMONAN=${DIRroot}/MONAN
-
-#
 # pegando argumentos
 #
 EXP=${1}
@@ -92,10 +72,9 @@ LOGDIR=${EXPDIR}/logs
 # GFS analysis                       FNL
 # ERA5 reanalysis                    ERA5
 #
-USERDATA=${EXP}
 
-#OPERDIR=${BASEDIR}/data/${USERDATA}
-OPERDIR=/oper/dados/ioper/tempo/${USERDATA}
+#OPERDIR=${BASEDIR}/data/${EXP}
+OPERDIR=/oper/dados/ioper/tempo/${EXP}
 
 #BNDDIR=$OPERDIR/${LABELI:0:10}
 BNDDIR=$OPERDIR/0p25/brutos/${LABELI:0:4}/${LABELI:4:2}/${LABELI:6:2}/${LABELI:8:2}
@@ -173,6 +152,10 @@ cp -rf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
 #ln -sf ${OPERDIR}/invariant/*.grb .
 
 export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
+#export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}:00:00
+#export final_date="2023-12-26_00.00.00"
+#export final_date=${dataf} 
+export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}:00:00
 
 #
 # scripts
@@ -401,7 +384,9 @@ echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
 
-if [ ! -e "${EXPDIR}/diag.2024-01-02_00.00.00.nc" ]; then
+
+#TODO: EGK - mover essa checagem e movimento das saidas para o script 2
+if [ ! -e "${EXPDIR}/diag.${final_date}.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."

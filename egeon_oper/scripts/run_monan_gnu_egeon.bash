@@ -151,11 +151,6 @@ cp -rf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
 
 #ln -sf ${OPERDIR}/invariant/*.grb .
 
-export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
-#export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}:00:00
-#export final_date="2023-12-26_00.00.00"
-#export final_date=${dataf} 
-export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}:00:00
 
 #
 # scripts
@@ -328,12 +323,11 @@ chmod +x InitAtmos_exe.sh
 cd ${EXPDIR}
 
 JobName=MONAN.GNU        # Nome do Job
-cores=1024
+cores=512
 
 ln -sf ${EXECPATH}/atmosphere_model .
 ln -sf ${TBLDIR}/* .
 
-#if [ ${EXP} = "ERA5" ]; then
 if [ ${EXP} = "GFS" ]; then
 sed -e "s,#LABELI#,${start_date},g" \
          ${NMLDIR}/namelist.atmosphere.TEMPLATE > ./namelist.atmosphere
@@ -342,7 +336,6 @@ fi
 
 cp ${NMLDIR}/stream_list.atmosphere.* .
 
-#if [ ${EXP} = "ERA5" ]; then
 if [ ${EXP} = "GFS" ]; then
  ln -sf ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
 else
@@ -351,7 +344,7 @@ fi
 
 cat > monan_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=16
+#SBATCH --nodes=8
 #SBATCH --ntasks=${cores}
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch
@@ -383,16 +376,6 @@ End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
-
-
-#TODO: EGK - mover essa checagem e movimento das saidas para o script 2
-if [ ! -e "${EXPDIR}/diag.${final_date}.nc" ]; then
-    echo "********* ATENTION ************"
-    echo "An error running MONAN occurred. check logs folder"
-    echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
-    exit -1
-fi
-
 
 #
 # move dataout, clean up and remove files/links

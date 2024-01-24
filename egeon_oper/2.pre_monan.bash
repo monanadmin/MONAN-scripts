@@ -17,11 +17,11 @@
 #
 # !CALLING SEQUENCE:
 #
-#     ./2.pre_monan.bash EXP_NAME RESOLUTION LABELI
+#     ./2.pre_monan.bash EXP_NAME RESOLUTION LABELI FCST
 #           o EXP_NAME   : Forcing: GFS
 #           o RESOLUTION : 1024002  (24 km)
 #           o LABELI     : Initial: date 2024010100
-#           o FCST       : Forecast: 24, 36, 72, 84, etc. [hours] - not yet
+#           o FCST       : Forecast: 24, 36, 72, 84, etc. [hours]
 #
 # !REVISION HISTORY: 
 #
@@ -30,11 +30,6 @@
 #EOP
 #-----------------------------------------------------------------------------!
 #EOC
-
-# TODO list:
-# - CR: unificar todos exports em load_monan_app_modules.sh
-# - DE: Alterar script de modo a poder executar novamente com os diretórios limpos e não precisar baixar os dados novamente
-# - DE: Criar função para mensagem
 
 
 function usage(){
@@ -45,7 +40,7 @@ function usage(){
 # Verificando argumentos de entrada
 #
 
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
    usage
    exit 1
 fi
@@ -53,27 +48,30 @@ fi
 #
 # pegando argumentos
 #
-EXP=${1}
-RES=${2}
-LABELI=${3} 
-
+export EXP=${1}
+export RES=${2}
+export LABELI=${3} 
+export FCST=${4}
 
 #----------------------------------
 
 . ./load_monan_app_modules.sh
 
-  datai=${LABELI}
-  echo ${datai}
+export  datai=${LABELI}
+echo ${datai}
 
-  hh=${datai:8:2}
+# add FCST to datai
+hh=${datai:8:2}
+export dataf=`date -d "${datai:0:8} ${hh}:00 ${FCST} hours" +"%Y%m%d%H"`
 
-  # soma 24 horas de previsao - pode ser modificado dependendo da entrada das horas de previsao (aqui FST=24)
-  dataf=`date -d "${datai:0:8} ${hh}:00 24 hours" +"%Y%m%d%H"`
+echo
+echo ${dataf}
 
-  echo
-  echo ${dataf}
+export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}.00.00
 
-export dataf=`date -d "${datai:0:8} ${hh}:00 24 hours" +"%Y%m%d%H"`
+echo 
+echo ${final_date}
+echo 
 
 #----------------------------------
 
@@ -158,8 +156,13 @@ echo -e  "${GREEN}==>${NC} Submitting MONAN and waiting for finish before exit .
 echo -e  "${GREEN}==>${NC} Logs being generated at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs ... \n"
 echo -e  "sbatch ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh"
 sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
-# output files are checked at monan_exe.sh
 
+if [ ! -e "${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monanprd/diag.${final_date}.nc" ]; then
+    echo "********* ATENTION ************"
+    echo "An error running MONAN occurred. check logs folder"
+    echo "File ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/x1.${RES}.init.nc was not generated."
+    exit -1
+fi
 echo -e "${GREEN}==>${NC} Please, check the output log files at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs to be sure that MONAN ended successfully. \n"
 
 

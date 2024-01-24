@@ -22,3 +22,24 @@ export I_MPI_DEBUG=5
 export MKL_DEBUG_CPU_TYPE=5
 export I_MPI_ADJUST_BCAST=12 ## NUMA aware SHM-Based (AVX512)
 
+# variables for MONAN-scripts/egeon_oper repository
+export DIRroot=$(pwd)
+export DIRMONAN=${DIRroot}/MONAN
+export DIRMONAN_SCR=${DIRroot}/scripts  # will override scripts at MONAN
+export DIRMONAN_NML=${DIRroot}/namelist  # will override namelist at MONAN
+export DIRMONAN_NCL=${DIRroot}/scripts/NCL  # will override NCL at MONAN
+export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0
+
+# variables for MONAN/testcase dir, and static/run_monan_gnu.egeon scripts
+export BASEDIR=${DIRMONAN}/testcase
+export DATADIR=${BASEDIR}/data
+export TBLDIR=${BASEDIR}/tables
+export NMLDIR=${BASEDIR}/namelist
+export GEODATA=${BASEDIR}/data/WPS_GEOG/
+export EXECPATH=${BASEDIR}/../exec
+export RUNDIR=${BASEDIR}/runs
+export SCRDIR=${BASEDIR}/scripts
+
+export GREEN='\033[1;32m'  # Green
+export RED='\033[1;31m'    # Red
+export NC='\033[0m'        # No Color

@@ -55,13 +55,6 @@ export FCST=${4}
 
 #----------------------------------
 
-export DIRroot=$(pwd)
-export DIRMONAN=${DIRroot}/MONAN
-export DIRMONAN_SCR=${DIRroot}/scripts  # will override scripts at MONAN
-export DIRMONAN_NML=${DIRroot}/namelist  # will override namelist at MONAN
-export DIRMONAN_NCL=${DIRroot}/scripts/NCL  # will override NCL at MONAN
-export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
-
 source ${DIRMONAN_SCR}/generic_funcs_and_variables.sh
 . ./load_monan_app_modules.sh
 

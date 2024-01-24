@@ -24,9 +24,7 @@
 #EOC
 
 function usage(){
-   echo "sedusage"
    sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' static.sh | head -n -1
-   echo "sedusage"
 }
 
 function run_static()

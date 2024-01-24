@@ -66,9 +66,8 @@ export DIRMONAN_SCR=${DIRroot}/scripts  # will override scripts at MONAN
 export DIRMONAN_NML=${DIRroot}/namelist  # will override namelist at MONAN
 export DIRMONAN_NCL=${DIRroot}/scripts/NCL  # will override NCL at MONAN
 export DIRDADOS=/mnt/beegfs/monan/dados/MONAN_v0.1.0 
-export GREEN='\033[1;32m'  # Green
-export RED='\033[1;31m'    # Red
-export NC='\033[0m'        # No Color
+
+source ${DIRMONAN_SCR}/generic_funcs_and_variables.sh
 ./load_monan_app_modules.sh
 
 
@@ -96,24 +95,17 @@ cp -rf ${DIRMONAN_NCL}/* ${DIRMONAN}/testcase/NCL/
 echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
 echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
 #tar -xzf ${DIRDADOS}/MONAN_data_GFS_v1.0.tgz -C ${DIRMONAN}
-tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+#tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 
-echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
+
+# Executes the static phase
 cd ${DIRMONAN}/testcase/scripts
-${DIRMONAN}/testcase/scripts/static.sh ${EXP} ${RES}
 
-
-
-echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
-cd ${DIRMONAN}/testcase/runs/${EXP}/static
-sbatch --wait make_static.sh
-
-if [ ! -e x1.${RES}.static.nc ]; then
-  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
-  echo -e  "${RED}==>${NC} Static phase fails ! Check logs at ${DIRMONAN}/testcase/runs/${EXP}/static/logs . Exiting script. \n"
+source ${DIRMONAN}/testcase/scripts/static.sh
+result_static=$(run_static "${EXP}" "${RES}")
+if [ ${result_static} -eq -1 ]; then
   exit -1
 fi
-
 
 
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"

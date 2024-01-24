@@ -24,16 +24,19 @@
 #EOC
 
 function usage(){
+   echo "sedusage"
    sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' static.sh | head -n -1
+   echo "sedusage"
 }
 
+function run_static()
 #
 # Check input args
 #
 
 if [ $# -ne 2 ]; then
    usage
-   exit 1
+   exit -1
 fi
 
 #
@@ -88,6 +91,8 @@ ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 #
 # make submission job
 #
+
+echo -e "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 
 cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
@@ -152,3 +157,16 @@ EOF0
 
 chmod +x ${STATICPATH}/make_static.sh
 
+
+echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
+cd ${STATICPATH}
+sbatch --wait make_static.sh
+
+if [ ! -e x1.${RES}.static.nc ]; then
+  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"
+  echo -e  "${RED}==>${NC} Static phase fails ! Check logs at  ${STATICPATH}/logs/. Exiting script. \n"
+  exit -1
+else
+  exit 0
+fi
+}

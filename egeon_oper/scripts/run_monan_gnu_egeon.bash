@@ -314,7 +314,7 @@ chmod +x InitAtmos_exe.sh
 cd ${EXPDIR}
 
 JobName=MONAN.GNU        # Nome do Job
-cores=512
+cores=1024
 
 ln -sf ${EXECPATH}/atmosphere_model .
 ln -sf ${TBLDIR}/* .
@@ -331,7 +331,7 @@ ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 
 cat > monan_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=8
+#SBATCH --nodes=16
 #SBATCH --ntasks=${cores}
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch

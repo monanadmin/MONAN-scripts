@@ -27,7 +27,6 @@ function usage(){
    sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' static.sh | head -n -1
 }
 
-function run_static()
 #
 # Check input args
 #
@@ -144,15 +143,4 @@ EOF0
 chmod +x ${STATICPATH}/make_static.sh
 
 
-echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
-cd ${STATICPATH}
-sbatch --wait make_static.sh
-
-if [ ! -e x1.${RES}.static.nc ]; then
-  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"
-  echo -e  "${RED}==>${NC} Static phase fails ! Check logs at  ${STATICPATH}/logs/. Exiting script. \n"
-  exit -1
-else
-  exit 0
-fi
-}
+exit

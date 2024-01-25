@@ -189,4 +189,8 @@ else
     exit -1
 fi
 
+echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
+echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
+tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
+
 echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"

@@ -30,7 +30,10 @@
 #EOP
 #-----------------------------------------------------------------------------!
 #EOC
-
+# TODO list:
+# - CR: unificar todos exports em load_monan_app_modules.sh
+# - DE: Alterar script de modo a poder executar novamente com os diretórios limpos e não precisar baixar os dados novamente
+# - DE: Criar função para mensagem
 
 function usage(){
    sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./2.pre_monan.bash | head -n -1
@@ -55,8 +58,8 @@ export FCST=${4}
 
 #----------------------------------
 
-source ${DIRMONAN_SCR}/generic_funcs_and_variables.sh
 . ./load_monan_app_modules.sh
+source ${DIRMONAN_SCR}/generic_funcs_and_variables.sh
 
 export  datai=${LABELI}
 echo ${datai}
@@ -95,23 +98,35 @@ cp -rf ${DIRMONAN_NML}/* ${DIRMONAN}/testcase/namelist/
 echo -e  "${GREEN}==>${NC} Copyings scripts from repository to MONAN testcase NCL folders... \n"
 cp -rf ${DIRMONAN_NCL}/* ${DIRMONAN}/testcase/NCL/
 
-echo -e  "${GREEN}==>${NC} Copying and decompressing all data for preprocessing... \n"
-echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
-tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
 
 
-# Executes the static phase
-cd ${DIRMONAN}/testcase/scripts
-source ${DIRMONAN}/testcase/scripts/static.sh
-result_static=$(run_static "${EXP}" "${RES}")
-if [ ${result_static} -eq -1 ]; then
-  exit -1
+if [ ! -e ${DIRMONAN}/testcase/runs/${EXP}/static/x1.${RES}.static.nc ]; then
+
+  echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
+  cd ${DIRMONAN}/testcase/scripts
+  ${DIRMONAN}/testcase/scripts/static.sh ${EXP} ${RES}
+
+  echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
+  cd ${DIRMONAN}/testcase/runs/${EXP}/static
+  sbatch --wait make_static.sh
+
+  if [ ! -e x1.${RES}.static.nc ]; then
+    echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
+    echo -e  "${RED}==>${NC} Static phase fails ! Check logs at ${DIRMONAN}/testcase/runs/${EXP}/static/logs . Exiting script. \n"
+    exit -1
+  fi
+
+else
+
+    echo -e  "${GREEN}==>${NC} Static phase is done already !  Skipping phase... \n"
+
 fi
+
 
 
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"
 cd ${DIRMONAN}/testcase/scripts
-${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${LABELI}
+${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${RES} ${LABELI} ${FCST}
 
 
 

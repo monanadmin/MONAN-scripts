@@ -17,16 +17,10 @@
 #
 # !CALLING SEQUENCE:
 #     
-#        ./run_monan_gnu.egeon EXP_NAME LABELI
-#
-# For benchmark:
-#        ./run_monan_gnu.egeon CFSR 2010102300
-#
-# For ERA5 datasets
-#
-#        ./run_monan_gnu.egeon ERA5 2021010100
+#        ./run_monan_gnu.egeon EXP_NAME RES LABELI FCST
 #
 #           o EXP_NAME : Forcing: ERA5, CFSR, GFS, etc.
+#           o RES      : Resolution: 1024002 (24km), 2621442
 #           o LABELI   : Initial: date 2015030600
 #           o FCST     : Forecast: 24, 36, 72, 84, etc. [hours]
 #
@@ -49,7 +43,7 @@ function usage(){
 # Verificando argumentos de entrada
 #
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 4 ]; then
    usage
    exit 1
 fi
@@ -60,7 +54,11 @@ export HUGETLB_VERBOSE=0
 # pegando argumentos
 #
 EXP=${1}
-LABELI=${2}; start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
+RES=${2}
+LABELI=${3} 
+FCST=${4}
+
+start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 
 EXPDIR=${RUNDIR}/${EXP}/${LABELI}
 LOGDIR=${EXPDIR}/logs
@@ -135,7 +133,6 @@ cd ${EXPDIR}/wpsprd
 
 echo "FORECAST "${LABELI}
 
-#ln -sf ${TBLDIR}/Vtable.ERA-interim.pl ./Vtable
 ln -sf ${TBLDIR}/Vtable.GFS ./Vtable
 
 cp ${SCRDIR}/link_grib.csh .
@@ -144,12 +141,7 @@ ln -sf ${EXECPATH}/ungrib.exe                    .
 
 #ln -sf ${BNDDIR}/*.grib2 .
 #ln -sf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
-# EGK: entender por que o link simbolico da operacaonao funciona, precisa ser copia para a conta do usuario
 cp -rf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
-
-#ln -sf ${BNDDIR}/*.grb .
-
-#ln -sf ${OPERDIR}/invariant/*.grb .
 
 
 #
@@ -230,7 +222,6 @@ fi
    mv namelist.wps degrib_exe.sh ${EXPDIR}/scripts
    rm -f link_grib.csh
    cd ..
-#   ln -sf wpsprd/FILE3\:${start_date:0:13} .
    ln -sf wpsprd/GFS\:${start_date:0:13} .
    find ${EXPDIR}/wpsprd -maxdepth 1 -type l -exec rm -f {} \;
 
@@ -257,7 +248,7 @@ sed -e "s,#LABELI#,${start_date},g;s,#GEODAT#,${GEODATA},g" \
 	 ${NMLDIR}/namelist.init_atmosphere.TEMPLATE > ./namelist.init_atmosphere
 
 cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
-ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
+ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.32 .
 
 # executable
 ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
@@ -336,11 +327,7 @@ fi
 
 cp ${NMLDIR}/stream_list.atmosphere.* .
 
-if [ ${EXP} = "GFS" ]; then
- ln -sf ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
-else
- ln -sf ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
-fi 
+ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 
 cat > monan_exe.sh <<EOF0
 #!/bin/bash
@@ -387,7 +374,7 @@ cp -f namelist.atmosphere ${EXPDIR}/scripts
 cp -f monan_exe.sh ${EXPDIR}/scripts
 cp -f stream* ${EXPDIR}/scripts
 mv x1.*.init.nc ${EXPDIR}/monanprd
-ln -sf ${EXPDIR}/monanprd/x1.1024002.init.nc ${EXPDIR}
+ln -sf ${EXPDIR}/monanprd/x1.${RES}.init.nc ${EXPDIR}
 mv diag* ${EXPDIR}/monanprd
 mv histor* ${EXPDIR}/monanprd
 mv Timing ${LOGDIR}/Timing.MONAN
@@ -395,7 +382,7 @@ mv Timing ${LOGDIR}/Timing.MONAN
 #rm -f namelist.atmosphere
 #rm -f monan_exe.sh
 #rm -f streams*
-#if [ ! -e "${EXPDIR}/monanprd/x1.1024002.init.nc" ]; then
+#if [ ! -e "${EXPDIR}/monanprd/x1.${RES}.init.nc" ]; then
 #    cp -f x1.*.init.nc* ${EXPDIR}/monanprd
 #fi
 

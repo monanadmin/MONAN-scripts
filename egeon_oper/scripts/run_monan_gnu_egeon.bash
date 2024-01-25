@@ -336,7 +336,7 @@ cat > monan_exe.sh <<EOF0
 #SBATCH --tasks-per-node=64
 #SBATCH --partition=batch
 #SBATCH --job-name=${JobName}
-#SBATCH --time=2:00:00         
+#SBATCH --time=4:00:00         
 #SBATCH --output=${LOGDIR}/my_job_monan.o%j   # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_monan.e%j    # File name for standard error output
 #SBATCH --mem=500000
@@ -345,6 +345,8 @@ export executable=atmosphere_model
 
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
+
+git log | head -1
 
 # generic
 ulimit -s unlimited

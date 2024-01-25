@@ -346,8 +346,6 @@ export executable=atmosphere_model
 cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
 
-git log | head -1
-
 # generic
 ulimit -s unlimited
 

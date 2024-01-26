@@ -16,9 +16,9 @@ DATA_INIT=${2}
 DATA_END=${3}
 
 START_DATE_YYYYMMDD="${DATA_INIT:0:4}-${DATA_INIT:4:2}-${DATA_INIT:6:2}"
-START_HH_MM="${DATA_INIT:8:2}:00:00"
+START_HH_MM="${DATA_INIT:8:2}:00"
 END_DATE_YYYYMMDD="${DATA_END:0:4}-${DATA_END:4:2}-${DATA_END:6:2}"
-END_HH_MM="${DATA_END:8:2}:00:00"
+END_HH_MM="${DATA_END:8:2}:00"
 
 rm -f include_fields
 cp include_fields.diag include_fields

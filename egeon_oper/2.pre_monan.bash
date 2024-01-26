@@ -61,17 +61,17 @@ export FCST=${4}
 . ./load_monan_app_modules.sh
 source ${DIRMONAN_SCR}/generic_funcs_and_variables.sh
 
-export  datai=${LABELI}
+datai=${LABELI}
 echo ${datai}
 
 # add FCST to datai
 hh=${datai:8:2}
-export dataf=`date -d "${datai:0:8} ${hh}:00 ${FCST} hours" +"%Y%m%d%H"`
+dataf=`date -d "${datai:0:8} ${hh}:00 ${FCST} hours" +"%Y%m%d%H"`
 
 echo
 echo ${dataf}
 
-export final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}.00.00
+final_date=${dataf:0:4}-${dataf:4:2}-${dataf:6:2}_${dataf:8:2}.00.00
 
 echo 
 echo ${final_date}
@@ -126,7 +126,7 @@ fi
 
 echo -e  "${GREEN}==>${NC} Creating submition scripts degrib, atmosphere_model...\n"
 cd ${DIRMONAN}/testcase/scripts
-${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${RES} ${LABELI} ${FCST}
+${DIRMONAN}/testcase/scripts/run_monan_gnu_egeon.bash ${EXP} ${RES} ${datai} ${FCST} ${dataf}
 
 
 

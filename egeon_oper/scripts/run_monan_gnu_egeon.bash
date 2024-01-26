@@ -23,6 +23,7 @@
 #           o RES      : Resolution: 1024002 (24km), 2621442
 #           o LABELI   : Initial: date 2015030600
 #           o FCST     : Forecast: 24, 36, 72, 84, etc. [hours]
+#           o LABELF   : Final: = LABELI + FCST
 #
 # !REVISION HISTORY:
 # 30 sep 2022 - JPRF
@@ -35,6 +36,8 @@
 #-----------------------------------------------------------------------------!
 #EOC
 
+# TODO - revision history - start from last GAM rev - this is a different code purpose
+
 function usage(){
    sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.egeon | head -n -1
 }
@@ -43,7 +46,7 @@ function usage(){
 # Verificando argumentos de entrada
 #
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 5 ]; then
    usage
    exit 1
 fi
@@ -57,6 +60,7 @@ EXP=${1}
 RES=${2}
 LABELI=${3} 
 FCST=${4}
+LABELF=${5}
 
 start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 
@@ -438,7 +442,7 @@ rm -f ${LOG_FILE}
 echo -e  "Executing post processing...\n" >> ${LOG_FILE} 2>&1
 
 # runs /ngrid2latlon.sh
-${EXPDIR}/postprd/ngrid2latlon.sh >> ${LOG_FILE} 2>&1
+${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
 
 # runs prec.gs
 grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1

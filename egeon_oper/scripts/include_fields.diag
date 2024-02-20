@@ -1,9 +1,8 @@
-vorticity_250hPa
-vorticity_850hPa
-precipw
-rainnc
-rainc
-mslp
-t2m
-u10
-v10
+temperature_50hPa
+temperature_100hPa
+temperature_200hPa
+temperature_250hPa
+temperature_500hPa
+temperature_700hPa
+temperature_850hPa
+temperature_925hPa

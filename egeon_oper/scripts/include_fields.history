@@ -1,4 +1,8 @@
-uReconstructZonal
-uReconstructMeridional
-zgrid
-
+rainc
+rainnc
+precipw
+u10
+v10
+t2m
+th2m
+mslp

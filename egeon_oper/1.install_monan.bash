@@ -76,6 +76,9 @@ else
     exit -1
 fi
 
+# copying Registry from repository into forked and cloned MONAN
+cp $DIRMONAN_NML/Registry.xml.atm $MONANDIR/src/core_atmosphere/Registry.xml
+
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script...\n"
 cat << EOF > make.sh

@@ -442,7 +442,7 @@ rm -f ${LOG_FILE}
 echo -e  "Executing post processing...\n" >> ${LOG_FILE} 2>&1
 
 # runs ./ngrid2latlon.sh
-./${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
+${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
 
 # runs prec.gs
 grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1

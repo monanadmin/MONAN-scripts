@@ -77,8 +77,6 @@ ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 # make submission job
 #
 
-echo -e "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
-
 cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=static

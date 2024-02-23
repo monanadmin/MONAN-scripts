@@ -151,7 +151,7 @@ cp -rf ${BNDDIR}/gfs.t00z.pgrb2.0p25.f000.${LABELI}.grib2 .
 #
 # scripts
 #
-JobName=era4monan
+JobName=gfs4monan
 
 cat > degrib_exe.sh << EOF0
 #!/bin/bash
@@ -441,7 +441,7 @@ module load opengrads-2.2.1
 rm -f ${LOG_FILE} 
 echo -e  "Executing post processing...\n" >> ${LOG_FILE} 2>&1
 
-# runs /ngrid2latlon.sh
+# runs ./ngrid2latlon.sh
 ${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
 
 # runs prec.gs

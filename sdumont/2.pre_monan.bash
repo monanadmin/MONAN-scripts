@@ -8,8 +8,8 @@
 export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
-#export DIRDADOS=pesquisa/dmdcc/monan/MONAN_v0.1.0
-export DIRDADOS=/scratch/cenapadrjsd/rpsouto/sequana/projetos/monan
+export DIRDADOS=pesquisa/dmdcc/monan/MONAN_v0.1.0
+export DIRDADOS_LOCAL=/scratch/cenapadrjsd/rpsouto/sequana/projetos/monan
 export FTPADD=http://ftp.cptec.inpe.br
 export GREEN='\033[1;32m'  # Green
 export RED='\033[1;31m'    # Red
@@ -27,15 +27,15 @@ mkdir -p ${DIRMONAN}/tar
 
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 # Temporariamente, enquanto desenv:----------------------------------------------v
-#wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
+wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
-#tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
-if [ ! -s ${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
-then
-   echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz"
-   exit
-fi
-tar -xzf ${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
+tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
+#if [ ! -s ${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
+#then
+#   echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz"
+#   exit
+#fi
+#tar -xzf ${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
 # Temporariamente, enquanto desenv:----------------------------------------------^
 
 
@@ -51,12 +51,12 @@ echo -e  "${GREEN}==>${NC} It may take several minutes...\n"
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
 #CR: TODO: incluir o dir MONAN dentro do tar MONAN_data_v1.0.tgz para fim de padronizacao.
 #tar -xzf ${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN}
-if [ ! -s /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz ] 
+if [ ! -s ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz ] 
 then
-   echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz"
+   echo "dado nao existe no ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
    exit
 fi
-tar -xzf /tmp/${DIRDADOS}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
+tar -xzf ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
 PID=$!
 i=1
 sp="/-\|"
@@ -77,7 +77,7 @@ ${DIRMONAN}/testcase/scripts/static.sh ERA5 1024002
 
 echo -e  "${GREEN}==>${NC} Executing sbatch make_static.sh...\n"
 cd ${DIRMONAN}/testcase/runs/ERA5/static
-sbatch --wait make_static.sh
+sbatch --wait -p sequana_cpu_dev -t 00:20:00 make_static.sh
 
 if [ ! -e x1.1024002.static.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
@@ -99,7 +99,7 @@ mkdir -p ${HOME}/local/lib64
 cp -f /usr/lib64/libjasper.so* ${HOME}/local/lib64
 cp -f /usr/lib64/libjpeg.so* ${HOME}/local/lib64
 cd ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/
-sbatch --wait degrib_exe.sh
+sbatch --wait -p sequana_cpu_dev -t 00:20:00 degrib_exe.sh
 
 files_ungrib=("LSM:1979-01-01_00" "GEO:1979-01-01_00" "FILE:2021-01-01_00" "FILE2:2021-01-01_00" "FILE3:2021-01-01_00")
 for file in "${files_ungrib[@]}"; do
@@ -115,7 +115,7 @@ done
 
 echo -e  "${GREEN}==>${NC} Submiting InitAtmos_exe.sh...\n"
 cd ${DIRMONAN}/testcase/runs/ERA5/2021010100
-sbatch --wait InitAtmos_exe.sh
+sbatch --wait -p sequana_cpu_dev -t 00:20:00 InitAtmos_exe.sh
 
 if [ ! -e x1.1024002.init.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	

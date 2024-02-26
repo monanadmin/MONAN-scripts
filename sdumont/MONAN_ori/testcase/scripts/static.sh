@@ -71,7 +71,9 @@ fi
 cd ${STATICPATH}
 
 ln -sf ${TBLDIR}/* .
-ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
+
+#ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
+cp ${DATADIR}/meshes/x1.${RES}.grid.nc .
 
 ln -sf ${EXECFILEPATH}/init_atmosphere_model .
 
@@ -84,7 +86,8 @@ sed -e "s,#RES#,${RES},g" \
 	> ${STATICPATH}/streams.init_atmosphere
 
 
-ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+#ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+cp ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 
 #
 # make submission job

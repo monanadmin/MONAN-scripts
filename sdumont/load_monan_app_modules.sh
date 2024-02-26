@@ -14,5 +14,5 @@ export NETCDF=/scratch/app_sequana/netcdf/4.9.2
 module list
 
 export OMP_NUM_THREADS=1
-export INIT_ATM_PART==sequana_cpu_dev
+export INIT_ATM_PART=sequana_cpu_dev
 

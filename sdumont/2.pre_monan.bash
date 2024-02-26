@@ -8,7 +8,8 @@
 export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
 export DIRMONAN_ORI=${DIRroot}/MONAN_ori  # will override scripts at MONAN
-export DIRDADOS=pesquisa/dmdcc/monan/MONAN_v0.1.0
+#export DIRDADOS=pesquisa/dmdcc/monan/MONAN_v0.1.0
+export DIRDADOS=/scratch/cenapadrjsd/rpsouto/sequana/projetos/monan
 export FTPADD=http://ftp.cptec.inpe.br
 export GREEN='\033[1;32m'  # Green
 export RED='\033[1;31m'    # Red
@@ -29,12 +30,12 @@ echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 #wget ${FTPADD}/${DIRDADOS}/MONAN_testcase_v1.0.tgz 
 #CR: TODO: verificar se o wget baixou corretamente o dado antes de destargear:
 #tar -xzf ./MONAN_testcase_v1.0.tgz -C ${DIRroot}
-if [ ! -s /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
+if [ ! -s ${DIRDADOS}/MONAN_testcase_v1.0.tgz ] 
 then
    echo "dado nao existe no /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz"
    exit
 fi
-tar -xzf /tmp/${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
+tar -xzf ${DIRDADOS}/MONAN_testcase_v1.0.tgz -C ${DIRroot}
 # Temporariamente, enquanto desenv:----------------------------------------------^
 
 

@@ -56,16 +56,16 @@ then
    echo "dado nao existe no ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
    exit
 fi
-tar -xzf ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
-PID=$!
-i=1
-sp="/-\|"
-echo -n ' '
-while [ -d /proc/$PID ]
-do
-   sleep 0.1
-   printf "\b${sp:i++%${#sp}:1}"
-done
+#tar -xzf ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
+#PID=$!
+#i=1
+#sp="/-\|"
+#echo -n ' '
+#while [ -d /proc/$PID ]
+#do
+#   sleep 0.1
+#   printf "\b${sp:i++%${#sp}:1}"
+#done
 # Temporariamente, enquanto desenv:----------------------------------------------^
 
 

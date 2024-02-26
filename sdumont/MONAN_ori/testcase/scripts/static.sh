@@ -57,7 +57,7 @@ SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
 # CR+BIDU: enquanto desenv: de 32 para 4
-cores=4
+cores=16
 . ${BASEDIR}/../../load_monan_app_modules.sh
 
 #

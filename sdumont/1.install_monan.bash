@@ -69,7 +69,7 @@ fi
 
 cd ${MONANDIR}
 
-branch_name="develop"
+branch_name="main"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
     echo ""

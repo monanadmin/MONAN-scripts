@@ -137,7 +137,7 @@ mkdir -p ${HOME}/local/lib64
 cp -f /usr/lib64/libjasper.so* ${HOME}/local/lib64
 cp -f /usr/lib64/libjpeg.so* ${HOME}/local/lib64
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/wpsprd/
-#sbatch --wait degrib_exe.sh
+sbatch --wait degrib_exe.sh
 
 files_ungrib=("${EXP}:${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}")
 for file in "${files_ungrib[@]}"; do
@@ -153,7 +153,7 @@ done
 
 echo -e  "${GREEN}==>${NC} Submiting InitAtmos_exe.sh...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}
-#batch --wait InitAtmos_exe.sh
+batch --wait InitAtmos_exe.sh
 
 if [ ! -e x1.${RES}.init.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
@@ -165,7 +165,7 @@ fi
 echo -e  "${GREEN}==>${NC} Submitting MONAN and waiting for finish before exit ... \n"
 echo -e  "${GREEN}==>${NC} Logs being generated at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs ... \n"
 echo -e  "sbatch ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh"
-#sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
+sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
 
 if [ ! -e "${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monanprd/diag.${final_date}.nc" ]; then
     echo "********* ATENTION ************"

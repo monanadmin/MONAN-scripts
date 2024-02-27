@@ -28,16 +28,7 @@ rm -f latlon.nc surface.nc
 # 1. Timeseries for Diag fields 
 #
 ./convert_mpas ../monanprd/x1.${RESOLUTION}.init.nc ../monanprd/diag*nc
-cdo settunits,hours -settaxis,${START_DATE_YYYYMMDD},${START_HH}:00,1hour latlon.nc surface.nc
-rm -f latlon.nc
-
-#
-# 2. Timeseries for History fields
-#
-rm -f include_fields wind+pw_sfc.nc
-cp include_fields.history include_fields
-./convert_mpas ../monanprd/x1.${RESOLUTION}.init.nc ../monanprd/history.*.nc
-cdo settunits,hours -settaxis,${START_DATE_YYYYMMDD},${START_HH}:00,3hour latlon.nc wind+pw_sfc.nc
+cdo settunits,hours -settaxis,${START_DATE_YYYYMMDD},${START_HH}:00,1hour latlon.nc diagnostics_${START_DATE_YYYYMMDD}.nc
 rm -f latlon.nc
 
 exit 0

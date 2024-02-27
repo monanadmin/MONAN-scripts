@@ -412,12 +412,14 @@ chmod +x monan_exe.sh
 # EGK: TODO change this export location
 export LOG_FILE=${EXPDIR}/postprd/logs/pos.out
 
+START_DATE_YYYYMMDD=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}
+
 # copy convert_mpas from MONAN/exec to testcase
 rm -f ${EXPDIR}/postprd/convert_mpas
 ln -s ${EXECPATH}/convert_mpas ${EXPDIR}/postprd
 
 # copy from repository to testcase
-cp ${SCRDIR}/prec.gs ${EXPDIR}/postprd/prec.gs
+#cp ${SCRDIR}/prec.gs ${EXPDIR}/postprd/prec.gs
 cp ${SCRDIR}/ngrid2latlon.sh ${EXPDIR}/postprd/ngrid2latlon.sh
 cp ${SCRDIR}/include* ${EXPDIR}/postprd/.          # choice only some variables
 cp ${SCRDIR}/target* ${EXPDIR}/postprd/.           # regrid for regions
@@ -430,8 +432,49 @@ mkdir -p ${EXPDIR}/postprd/logs
 
 cd ${EXPDIR}/postprd
 
+
+cat > prec.gs <<EOF0
+
+'reinit';'set display color white';'c'
+  
+
+'set gxout shaded'
+
+'sdfopen diagnostics_${START_DATE_YYYYMMDD}.nc'
+'set mpdset mres'
+'set grads off'
+
+'set lon -83.75 -20.05'
+'set lat -55.75 14.25'
+'set t 1'
+'pr1=rainc+rainnc'
+'set t 25'
+'pr25=rainc+rainnc'
+
+'set clevs 0.5 1 2 4 8 16 32 64 128'
+'set ccols 0 14 11 5 13 10 7 12 2 6'
+
+'d pr25-pr1'
+'set gxout contour'
+
+'cbar'
+'draw title MONAN_${START_DATE_YYYYMMDD} APCP+24h'
+
+'printim MONAN.png'
+'quit'
+
+EOF0
+
 cat > PostAtmos_exe.sh <<EOF0
 #!/bin/bash
+#SBATCH --job-name=PostAtmos
+#SBATCH --nodes=1
+#SBATCH --partition=batch 
+#SBATCH --tasks-per-node=1
+#SBATCH --time=4:00:00
+#SBATCH --output=${LOGDIR}/my_job_pa.o%j    # File name for standard output
+#SBATCH --error=${LOGDIR}/my_job_pa.e%j     # File name for standard error output
+#SBATCH --mem=500000
 
 module load netcdf 
 module load netcdf-fortran 
@@ -447,7 +490,10 @@ ${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
 # runs prec.gs
 grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
 
-cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
+#cdo hourmean diagnostics_${START_DATE_YYYYMMDD}.nc mean.nc >> ${LOG_FILE} 2>&1
+
+echo -e  "Compressing post processed diagnostics file...\n" >> ${LOG_FILE} 2>&1
+XZ_OPT=-e9 tar cJf diagnostics_${START_DATE_YYYYMMDD}.tar.xz diagnostics_${START_DATE_YYYYMMDD}.nc
 
 #
 # move dataout, clean up and remove files/links

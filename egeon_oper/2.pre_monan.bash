@@ -153,7 +153,7 @@ done
 
 echo -e  "${GREEN}==>${NC} Submiting InitAtmos_exe.sh...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}
-batch --wait InitAtmos_exe.sh
+sbatch --wait InitAtmos_exe.sh
 
 if [ ! -e x1.${RES}.init.nc ]; then
   echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	

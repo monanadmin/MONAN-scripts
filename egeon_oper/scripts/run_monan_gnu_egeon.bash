@@ -492,12 +492,6 @@ grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
 
 #cdo hourmean diagnostics_${START_DATE_YYYYMMDD}.nc mean.nc >> ${LOG_FILE} 2>&1
 
-echo -e  "Compressing post processed diagnostics file...\n" >> ${LOG_FILE} 2>&1
-tar cJf diagnostics_${START_DATE_YYYYMMDD}.tar.xz diagnostics_${START_DATE_YYYYMMDD}.nc
-
-echo -e  "Compressing all /monanprd/diag*.nc files...\n" >> ${LOG_FILE} 2>&1
-tar cJf monanprd_${START_DATE_YYYYMMDD}.tar.xz ${EXPDIR}/monanprd
-
 #
 # move dataout, clean up and remove files/links
 #
@@ -520,6 +514,27 @@ EOF0
 
 chmod +x PostAtmos_exe.sh
 
+cat > Compress_exe.sh <<EOF0
+#!/bin/bash
+#SBATCH --job-name=Compress
+#SBATCH --nodes=1
+#SBATCH --partition=PESQ3 
+#SBATCH --tasks-per-node=1
+#SBATCH --time=24:00:00
+#SBATCH --output=${LOGDIR}/my_job_compress.o%j    # File name for standard output
+#SBATCH --error=${LOGDIR}/my_job_compress.e%j     # File name for standard error output
+#SBATCH --mem=500000
+
+echo -e  "Compressing post processed diagnostics file...\n" >> ${LOG_FILE} 2>&1
+tar -cf - diagnostics_${START_DATE_YYYYMMDD}.nc | xz -9 -c - > diagnostics_${START_DATE_YYYYMMDD}.tar.xz
+
+#echo -e  "Compressing all /monanprd/diag*.nc files...\n" >> ${LOG_FILE} 2>&1
+#tar -cf - ${EXPDIR}/monanprd | xz -9 -c - > monanprd_${START_DATE_YYYYMMDD}.tar.xz
+
+exit 0
+EOF0
+
+chmod +x Compress_exe.sh
 
 exit
 

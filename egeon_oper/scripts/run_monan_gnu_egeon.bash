@@ -495,6 +495,9 @@ grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
 echo -e  "Compressing post processed diagnostics file...\n" >> ${LOG_FILE} 2>&1
 XZ_OPT=-e9 tar cJf diagnostics_${START_DATE_YYYYMMDD}.tar.xz diagnostics_${START_DATE_YYYYMMDD}.nc
 
+echo -e  "Compressing all /monanprd/diag*.nc files...\n" >> ${LOG_FILE} 2>&1
+XZ_OPT=-e9 tar cJf monanprd_${START_DATE_YYYYMMDD}.tar.xz ${EXPDIR}/monanprd
+
 #
 # move dataout, clean up and remove files/links
 #

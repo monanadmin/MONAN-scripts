@@ -181,7 +181,7 @@ echo -e  "\n${GREEN}==>${NC} Executing post processing...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd
 sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd/PostAtmos_exe.sh
 
-files_pos=("surface.nc" "include_fields" "prec.gs" "MONAN.png")
+files_pos=("diagnostics_${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}.nc" "include_fields" "prec.gs" "MONAN.png")
 for file in "${files_pos[@]}"; do
   if [[ ! -e "$file" ]]; then
     echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"         

@@ -155,9 +155,10 @@ echo -e  "${GREEN}==>${NC} Installing init_atmosphere_model and atmosphere_model
 echo ""
 
 cd ${MONANDIR}
+#para funcionamento no Sdumont com compilador gnu - BD_fev_2024
+sed '/DMPAS_BUILD_TARGET/a override LIBS += -lstdc++' Makefile  -i
 . ${MONANDIR}/make.sh
 cd ${DIRroot}
-
 
 echo ""
 echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"

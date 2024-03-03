@@ -56,19 +56,25 @@ then
    echo "dado nao existe no ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
    exit
 fi
-#tar -xzf ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
-#PID=$!
-#i=1
-#sp="/-\|"
-#echo -n ' '
-#while [ -d /proc/$PID ]
-#do
-#   sleep 0.1
-#   printf "\b${sp:i++%${#sp}:1}"
-#done
+
+if [ -d MONAN ] 
+then
+   echo "A pasta MONAN ja existe, originada do arquivo ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
+else
+   echo "A pasta MONAN ainda nao existe, descompactando arquivo ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
+   tar -xzf ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz -C ${DIRMONAN} > /dev/null &
+   PID=$!
+   i=1
+   sp="/-\|"
+   echo -n ' '
+   while [ -d /proc/$PID ]
+   do
+      sleep 0.1
+      printf "\b${sp:i++%${#sp}:1}"
+   done
+fi
+
 # Temporariamente, enquanto desenv:----------------------------------------------^
-
-
 echo -e  "${GREEN}==>${NC} Creating make_static.sh for submiting init_atmosphere...\n"
 cd ${DIRMONAN}/testcase/scripts
 ${DIRMONAN}/testcase/scripts/static.sh ERA5 1024002

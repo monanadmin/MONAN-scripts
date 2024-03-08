@@ -119,8 +119,11 @@ export PNETCDF=${PNETCDFDIR}
 # PIO is not necessary for version 8.* If PIO is empty, MPAS Will use SMIOL
 export PIO=
 
+DATE_TIME_NOW=\$(date +"%Y%m%d%H%M%S")
+MAKE_OUT_FILE="make_\${DATE_TIME_NOW}_.output"
+
 make clean CORE=atmosphere
-make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee \${MAKE_OUT_FILE}
 
 mkdir ${MONANDIR}/bin
 mv ${MONANDIR}/atmosphere_model ${MONANDIR}/bin/
@@ -128,7 +131,7 @@ mv ${MONANDIR}/build_tables ${MONANDIR}/bin/
 make clean CORE=atmosphere
 
 make clean CORE=init_atmosphere
-make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee \${MAKE_OUT_FILE}
 
 mv ${MONANDIR}/init_atmosphere_model ${MONANDIR}/bin/
 make clean CORE=init_atmosphere

@@ -268,7 +268,7 @@ cat > InitAtmos_exe.sh <<EOF0
 #SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
-#SBATCH --mem=500000
+#SBATCH --exclusive
 
 export executable=init_atmosphere_model
 
@@ -343,7 +343,7 @@ cat > monan_exe.sh <<EOF0
 #SBATCH --time=4:00:00         
 #SBATCH --output=${LOGDIR}/my_job_monan.o%j   # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_monan.e%j    # File name for standard error output
-#SBATCH --mem=500000
+#SBATCH --exclusive
 
 export executable=atmosphere_model
 
@@ -474,7 +474,7 @@ cat > PostAtmos_exe.sh <<EOF0
 #SBATCH --time=4:00:00
 #SBATCH --output=${LOGDIR}/my_job_pa.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_pa.e%j     # File name for standard error output
-#SBATCH --mem=500000
+#SBATCH --exclusive
 
 module load netcdf 
 module load netcdf-fortran 
@@ -523,7 +523,7 @@ cat > Compress_exe.sh <<EOF0
 #SBATCH --time=24:00:00
 #SBATCH --output=${LOGDIR}/my_job_compress.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_compress.e%j     # File name for standard error output
-#SBATCH --mem=500000
+#SBATCH --exclusive
 
 echo -e  "Compressing post processed diagnostics file...\n" >> ${LOG_FILE} 2>&1
 tar -cf - diagnostics_${START_DATE_YYYYMMDD}.nc | xz -9 -c - > diagnostics_${START_DATE_YYYYMMDD}.tar.xz

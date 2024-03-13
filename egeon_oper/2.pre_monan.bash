@@ -193,15 +193,15 @@ done
 
 
 
-echo -e  "\n${GREEN}==>${NC} Compressing files...\n"
-cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd
-sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd/Compress_exe.sh
-
-if [ ! -e diagnostics_${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}.tar.xz ]; then
-  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"   
-  echo -e  "${RED}==>${NC} Compress phase fails ! Check logs at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs . Exiting script.\n"
-  exit -1
-fi
+#echo -e  "\n${GREEN}==>${NC} Compressing files...\n"
+#cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd
+#sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd/Compress_exe.sh
+#
+#if [ ! -e diagnostics_${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}.tar.xz ]; then
+#  echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"   
+#  echo -e  "${RED}==>${NC} Compress phase fails ! Check logs at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs . Exiting script.\n"
+#  exit -1
+#fi
 
 
 echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"

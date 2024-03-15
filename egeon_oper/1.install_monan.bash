@@ -66,8 +66,7 @@ fi
 
 cd ${MONANDIR}
 
-#branch_name="develop"
-branch_name="monan0.2.0"
+branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
     echo -e "${GREEN}==>${NC} Successfully checked out and updated branch: $branch_name"
@@ -78,7 +77,6 @@ else
 fi
 
 # copying Registry from repository into forked and cloned MONAN
-cp $DIRMONAN_NML/Registry.xml.atm $MONANDIR/src/core_atmosphere/Registry.xml
 rm -rf $MONANDIR/bin $MONANDIR/default_inputs/ 
 rm -f $MONANDIR/stream* $MONANDIR/namelist.* $MONANDIR/make.*.output $MONANDIR/make.sh
 

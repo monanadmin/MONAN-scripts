@@ -1,9 +1,10 @@
 # MONAN - Model for Ocean-laNd-Atmosphere PredictioN
 
-### *Quick Start for Egeon version 0.2.2*
-
+### *Quick Start for Egeon version 0.2.3*
 
 ## History:
+
+[v0.2.3](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.3_QuickStart.pdf) - Bug Fix in step 2 static.sh e make_static.sh
 
 [v0.2.2](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.2_QuickStart.pdf) - Improvement in step 3 and 4 for multiple executions
 
@@ -18,21 +19,22 @@
 ## Quick Start
 
 This manual describes a quick procedure for the developer to compile and run MONAN (currently pure MPAS 8.0.1 code) in the Egeon supercomputing environment.
-Please refer to [MONAN_v0.2.2_QuickStart.pdf](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.2_QuickStart.pdf) for more details
+Please refer to [MONAN_v0.2.3_QuickStart.pdf](https://github.com/monanadmin/monan/blob/main/doc/MONAN_v0.2.3_QuickStart.pdf) for more details
 
 ### Steps:
 
 Create your fork from https://github.com/monanadmin/MONAN-Model 
 
 Execute:
-~~~
+
+```
 cd /mnt/beegfs/$USER
 
 git clone https://github.com/monanadmin/MONAN-scripts.git
 
 cd /mnt/beegfs/$USER/MONAN-scripts
 
-git checkout 0.2.2
+git checkout 0.2.3
 
 cd /mnt/beegfs/$USER/MONAN-scripts/egeon
 
@@ -47,6 +49,7 @@ cd /mnt/beegfs/$USER/MONAN-scripts/egeon
 module load imagemagick-7.0.8-7-gcc-11.2.0-46pk2go
 
 display ./MONAN/testcase/runs/ERA5/2021010100/postprd/MONAN.png
-~~~
+
+```
 
 Check the displayed figure.

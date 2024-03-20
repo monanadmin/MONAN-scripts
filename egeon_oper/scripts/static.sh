@@ -33,7 +33,7 @@ function usage(){
 
 if [ $# -ne 2 ]; then
    usage
-   exit 1
+   exit -1
 fi
 
 #
@@ -41,21 +41,9 @@ fi
 #
    EXP=${1}
    RES=${2}
-#
-# Paths
-#
-
 #---
-HSTMAQ=$(hostname)
-BASEDIR=$(dirname $(pwd))
-DATADIR=${BASEDIR}/data
-TBLDIR=${BASEDIR}/tables
-NMLDIR=${BASEDIR}/namelist
-GEODATA=${BASEDIR}/data/WPS_GEOG/
-EXECFILEPATH=${BASEDIR}/../exec
-SCRIPTFILEPATH=${BASEDIR}/runs
-STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
+STATICPATH=${RUNDIR}/${EXP}/static
 
 #
 # Criando diretorio dados Estaticos
@@ -70,7 +58,7 @@ cd ${STATICPATH}
 ln -sf ${TBLDIR}/* .
 ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
 
-ln -sf ${EXECFILEPATH}/init_atmosphere_model .
+ln -sf ${EXECPATH}/init_atmosphere_model .
 
 sed -e "s,#GEODAT#,${GEODATA},g;s,#RES#,${RES},g" \
 	${NMLDIR}/namelist.init_atmosphere.STATIC \
@@ -99,7 +87,8 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
-#SBATCH --exclusive
+#SBATCH --mem=500000
+
 executable=init_atmosphere_model
 
 ulimit -s unlimited
@@ -151,3 +140,5 @@ EOF0
 
 chmod +x ${STATICPATH}/make_static.sh
 
+
+exit

@@ -49,6 +49,5 @@ cd /mnt/beegfs/$USER/MONAN-scripts/egeon
 module load imagemagick-7.0.8-7-gcc-11.2.0-46pk2go
 
 display ./MONAN/testcase/runs/ERA5/2021010100/postprd/MONAN.png
-~~
 
 Check the displayed figure.

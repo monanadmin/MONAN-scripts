@@ -99,7 +99,7 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #SBATCH --time=02:00:00        # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
-
+#SBATCH --exclusive
 executable=init_atmosphere_model
 
 ulimit -s unlimited

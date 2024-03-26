@@ -77,7 +77,8 @@ else
 fi
 
 # copying Registry from repository into forked and cloned MONAN
-cp $DIRMONAN_NML/Registry.xml.atm $MONANDIR/src/core_atmosphere/Registry.xml
+rm -rf $MONANDIR/bin $MONANDIR/default_inputs/ 
+rm -f $MONANDIR/stream* $MONANDIR/namelist.* $MONANDIR/make.*.output $MONANDIR/make.sh
 
 echo ""
 echo -e  "${GREEN}==>${NC} Making compile script...\n"

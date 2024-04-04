@@ -57,7 +57,7 @@ SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
 # CR+BIDU: enquanto desenv: de 32 para 4
-cores=32
+cores=${numNucleos}  # from load_monan_app_modules.sh
 . ${BASEDIR}/../../load_monan_app_modules.sh
 
 #
@@ -73,7 +73,7 @@ cd ${STATICPATH}
 ln -sf ${TBLDIR}/* .
 
 #ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
-cp ${DATADIR}/meshes/x1.${RES}.grid.nc .
+cp -f ${DATADIR}/meshes/x1.${RES}.grid.nc .
 
 ln -sf ${EXECFILEPATH}/init_atmosphere_model .
 
@@ -87,12 +87,11 @@ sed -e "s,#RES#,${RES},g" \
 
 
 #ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
-cp ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+cp -f  ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 
 #
 # make submission job
 #
-
 
 
 cat > ${STATICPATH}/make_static.sh << EOF0
@@ -100,9 +99,9 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #SBATCH --job-name=static
 #SBATCH --nodes=1              # Specify number of nodes
 #SBATCH --ntasks=${cores}             
-#SBATCH --tasks-per-node=${cores}     # Specify number of (MPI) tasks on each node
+#   SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
 #SBATCH --partition=${INIT_ATM_PART}
-#SBATCH --time=02:00:00        # Set a limit on the total run time
+#SBATCH --time=${sTime}       # Set a limit on the total run time
 #SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
 #SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
 

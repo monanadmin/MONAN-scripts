@@ -1,4 +1,5 @@
 #!/bin/bash
+#echo "-----------------------------         $0  ------------------------------; exit
 #-----------------------------------------------------------------------------#
 #                                   DIMNT/INPE                                #
 #-----------------------------------------------------------------------------#
@@ -20,11 +21,11 @@
 #        ./run_monan_gnu.egeon EXP_NAME LABELI
 #
 # For benchmark:
-#        ./run_monan_gnu.egeon CFSR 2010102300
+#        ./run_monan_gnu.bash CFSR 2010102300
 #
 # For ERA5 datasets
 #
-#        ./run_monan_gnu.egeon ERA5 2021010100
+#        ./run_monan_gnu.bash ERA5 2021010100
 #
 #           o EXP_NAME : Forcing: ERA5, CFSR, GFS, etc.
 #           o LABELI   : Initial: date 2015030600
@@ -42,7 +43,7 @@
 #EOC
 
 function usage(){
-   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.egeon | head -n -1
+   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.bash | head -n -1
 }
 
 #
@@ -60,6 +61,7 @@ export HUGETLB_VERBOSE=0
 # Caminhos
 #
 
+HOME=$SCRATCH 
 HSTMAQ=$(hostname)
 BASEDIR=$(dirname $(pwd))
 RUNDIR=${BASEDIR}/runs
@@ -115,10 +117,10 @@ fi
 # Configuracoes
 #
 
-JobElapsedTime=01:00:00 # Tempo de duracao do Job
-MPITasks=32             # Numero de processadores que serao utilizados no Job
-TasksPerNode=32         # Numero de processadores utilizados por tarefas MPI
-ThreadsPerMPITask=1     # Number of cores hosting OpenMP threads
+JobElapsedTime=${sTime}  # Tempo de duracao do Job 
+MPITasks=${numNucleos}   # Numero de processadores que serao utilizados no Job
+TasksPerNode=${MPITasks} # Numero de processadores utilizados por tarefas MPI
+ThreadsPerMPITask=1      # Number of cores hosting OpenMP threads
 
 #
 # Criando diretorios da rodada
@@ -156,7 +158,7 @@ cd ${EXPDIR}
 
 if [ ${EXP} = "ERA5" ]; then
 
-ln -sf ${BASEDIR}/runs/${EXP}/static/*.nc .
+cp -f ${BASEDIR}/runs/${EXP}/static/*.nc .
 
 cd ${EXPDIR}/wpsprd
 
@@ -180,29 +182,38 @@ export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 # scripts
 #
 JobName=era4monan
-
+#
+pwd 
 cat > degrib_exe.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
 #SBATCH --nodes=1
-#SBATCH --partition=batch
+#SBATCH --tasks=${numNucleos}                     # ic for benchmark
+#SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
 #SBATCH --tasks-per-node=1                      # ic for benchmark
-#SBATCH --time=00:30:00
+#SBATCH --time=${sTime}
 #SBATCH --output=${LOGDIR}/my_job_ungrib.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ungrib.e%j     # File name for standard error output
 #
+echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
+echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
+echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
+echo            SLURM_NTASKS=\$SLURM_NTASKS
+echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
+echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
+echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
 ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
 
 export PMIX_MCA_gds=hash
 
-echo  "STARTING AT \`date\` "
-Start=\`date +%s.%N\`
+echo  "STARTING AT \$(date) "
+Start=\$(date +%s.%N)
 echo \$Start > Timing.degrib
 #
 
-. ${DIRroot}/spack_wps/env_wps.sh
+# . ${DIRroot}/spack_wps/env_wps.sh
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/local/lib64
 
 ldd ungrib.exe
@@ -258,10 +269,11 @@ cat FILE2\:${start_date:0:13} GEO\:1979-01-01_00 > FILE3:${start_date:0:13}
 
 rm -f GRIBFILE.*
 
-End=\`date +%s.%N\`
-echo  "FINISHED AT \`date\` "
+End=\$(date +%s.%N)
+echo  "FINISHED AT \$(date) "
 echo \$End   >>Timing.degrib
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >> Timing.degrib
+cat Timing.degrib
 
 grep "Successful completion of program ungrib.exe" ungrib.log >& /dev/null
 
@@ -281,8 +293,8 @@ fi
 #
    mv ungrib.*.log ${LOGDIR}
    mv ungrib.log ${LOGDIR}/ungrib.${start_date}.log
-   mv Timing.degrib ${LOGDIR}
-   mv namelist.wps degrib_exe.sh ${EXPDIR}/scripts
+   cp Timing.degrib ${LOGDIR}
+   cp namelist.wps degrib_exe.sh ${EXPDIR}/scripts
    rm -f link_grib.csh
    cd ..
    ln -sf wpsprd/FILE3\:${start_date:0:13} .
@@ -311,23 +323,31 @@ sed -e "s,#LABELI#,${start_date},g;s,#GEODAT#,${GEODATA},g" \
 	 ${NMLDIR}/namelist.init_atmosphere.TEMPLATE > ./namelist.init_atmosphere
 
 cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
-ln -sf ${NMLDIR}/x1.1024002.graph.info.part.32 .
+cp -f ${NMLDIR}/x1.1024002.graph.info.part.${numNucleos} .
 
 # executable
 ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
 
 JobName=ic_monan
 
+pwd
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
-#SBATCH --nodes=1                         # depends on how many boundary files are available
-#SBATCH --partition=batch 
-#SBATCH --tasks-per-node=32               # only for benchmark
+#SBATCH --nodes=${numNodes}             # depends on how many boundary files are available
+#SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
+#SBATCH --tasks-per-node=${numNucleos}     # fron load_monan_app_modules.sh
 #SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
 #
+echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
+echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
+echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
+echo            SLURM_NTASKS=\$SLURM_NTASKS
+echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
+echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
+echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
 
 export executable=init_atmosphere_model
 
@@ -339,21 +359,23 @@ cd ${DIRroot}
 . ${DIRroot}/load_monan_app_modules.sh
 
 cd ${EXPDIR}
+rm -f x1.*.init.nc
 
-echo  "STARTING AT \`date\` "
-Start=\`date +%s.%N\`
+echo  "STARTING AT \$(date) "
+Start=\$(date +%s.%N)
 echo \$Start >  ${EXPDIR}/Timing.InitAtmos
 
-time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
+time mpirun -np \$SLURM_NTASKS ./\${executable}
 
-End=\`date +%s.%N\`
-echo  "FINISHED AT \`date\` "
+End=\$(date +%s.%N)
+echo  "FINISHED AT \$(date) "
 echo \$End   >> ${EXPDIR}/Timing.InitAtmos
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing.InitAtmos
+cat Timing.InitAtmos 
 
  mv Timing.InitAtmos log.*.out ${LOGDIR}
- mv namelist.init* streams.init* ${EXPDIR}/scripts
- mv InitAtmos_exe.sh ${EXPDIR}/scripts
+ cp namelist.init* streams.init* ${EXPDIR}/scripts
+ cp InitAtmos_exe.sh ${EXPDIR}/scripts
 
 
 date
@@ -365,9 +387,9 @@ chmod +x InitAtmos_exe.sh
 else
 
 echo "Benchmark CFSR 2010102300 15 km"
-ln -sf ${BNDDIR}/x1.* .
-ln -sf ${NMLDIR}/namelist.atmosphere.BENCH namelist.atmosphere
-ln -sf ${NMLDIR}/streams.atmosphere.BENCH streams.atmosphere
+cp -f ${BNDDIR}/x1.* .
+cp -f ${NMLDIR}/namelist.atmosphere.BENCH namelist.atmosphere
+cp -f ${NMLDIR}/streams.atmosphere.BENCH streams.atmosphere
 
 fi
 
@@ -383,36 +405,47 @@ fi
 
 cd ${EXPDIR}
 
-JobName=MONAN.GNU        # Nome do Job
-cores=256
+ JobName=MONAN.GNU      
+   cores=${numNucleosModel}   # from load_monan_app_modules.sh
+   NODES=${numNodesModel}     # from load_monan_app_modules.sh
+partName=${ATM_MODEL_PART} # from load_monan_app_modules.sh
+wallTime=${sTimeModel}     # from load_monan_app_modules.sh
 
 ln -sf ${EXECPATH}/atmosphere_model .
-ln -sf ${TBLDIR}/* .
+cp -f ${TBLDIR}/* .
 
 if [ ${EXP} = "ERA5" ]; then
 sed -e "s,#LABELI#,${start_date},g" \
          ${NMLDIR}/namelist.atmosphere.TEMPLATE > ./namelist.atmosphere
-cp ${NMLDIR}/streams.atmosphere.TEMPLATE streams.atmosphere
+cp -f ${NMLDIR}/streams.atmosphere.TEMPLATE streams.atmosphere
 fi
 
-cp ${NMLDIR}/stream_list.atmosphere.* .
+cp -f ${NMLDIR}/stream_list.atmosphere.* .
 
 if [ ${EXP} = "ERA5" ]; then
- ln -sf ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
+ cp -f ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
 else
- ln -sf ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
+ cp -f ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
 fi 
 
 cat > monan_exe.sh <<EOF0
 #!/bin/bash
-#SBATCH --nodes=4
-#SBATCH --ntasks=${cores}
-#SBATCH --tasks-per-node=64
-#SBATCH --partition=batch
-#SBATCH --job-name=${JobName}
-#SBATCH --time=2:00:00         
-#SBATCH --output=${LOGDIR}/my_job_monan.o%j   # File name for standard output
-#SBATCH --error=${LOGDIR}/my_job_monan.e%j    # File name for standard error output
+#SBATCH          --nodes=${NODES}
+#SBATCH         --ntasks=${cores} 
+# BATCH --tasks-per-node=32
+#SBATCH      --partition=${partName} 
+#SBATCH       --job-name=${JobName}
+#SBATCH           --time=${wallTime}        
+#SBATCH         --output=${LOGDIR}/monan_model.o%j # File name for standard output
+#SBATCH          --error=${LOGDIR}/monan_model.e%j # File name for standard error output
+
+echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
+echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
+echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
+echo            SLURM_NTASKS=\$SLURM_NTASKS
+echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
+echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
+echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
 
 export executable=atmosphere_model
 
@@ -424,23 +457,26 @@ ulimit -s unlimited
 
 cd ${EXPDIR}
 
-echo \$SLURM_JOB_NUM_NODES
+comando="rm -f history.* diag.*"
+echo \${comando}; eval \${comando}
 
-echo  "STARTING AT \`date\` "
-Start=\`date +%s.%N\`
+Start=\$(date +%s.%N)
+echo  "STARTING AT \$(date) "
 echo \$Start >  ${EXPDIR}/Timing
 
-time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
+comando="time mpirun -np \$SLURM_NTASKS ./\${executable}"
+echo \$comando; eval \$comando
 
-End=\`date +%s.%N\`
-echo  "FINISHED AT \`date\` "
+End=\$(date +%s.%N)
+echo  "FINISHED AT \$(date) "
 echo \$End   >> ${EXPDIR}/Timing
 echo \$Start \$End | awk '{print \$2 - \$1" sec"}' >>  ${EXPDIR}/Timing
+cat ${EXPDIR}/Timing
 
 if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
-    echo "File ${EXPDIR}/x1.1024002.init.nc was not generated."
+    echo "File ${EXPDIR}/diag.2021-01-02_00.00.00.nc was not generated."
     exit -1
 fi
 echo -e  "Script \${0} completed. \n"
@@ -450,14 +486,14 @@ echo -e  "Script \${0} completed. \n"
 #
 
 mv log.atmosphere.*.out ${LOGDIR}
-mv namelist.atmosphere ${EXPDIR}/scripts
-mv monan_exe.sh ${EXPDIR}/scripts
-mv stream* ${EXPDIR}/scripts
-mv x1.*.init.nc* ${EXPDIR}/monanprd
-mv diag* ${EXPDIR}/monanprd
-mv histor* ${EXPDIR}/monanprd
-mv Timing ${LOGDIR}/Timing.MONAN
-find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} \;
+cp namelist.atmosphere  ${EXPDIR}/scripts
+cp monan_exe.sh         ${EXPDIR}/scripts
+cp stream*              ${EXPDIR}/scripts
+cp x1.*.init.nc*        ${EXPDIR}/monanprd
+cp diag*                ${EXPDIR}/monanprd
+cp histor*              ${EXPDIR}/monanprd
+mv Timing               ${LOGDIR}/Timing.MONAN
+find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {} 
 
 exit 0
 EOF0

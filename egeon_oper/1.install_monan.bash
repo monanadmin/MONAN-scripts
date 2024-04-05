@@ -28,7 +28,7 @@ RED='\033[1;31m'    # Red
 NC='\033[0m'        # No Color
 
 case ${version} in
-   8) vlabel="v0.1.0";;
+   8) vlabel="v0.3.0";;
    7) vlabel="v7.3";;
    6) vlabel="v6.31";;
 esac
@@ -67,7 +67,7 @@ fi
 
 cd ${MONANDIR}
 
-branch_name="develop"
+branch_name="monan0.3.0"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
     echo -e "${GREEN}==>${NC} Successfully checked out and updated branch: $branch_name"

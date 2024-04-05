@@ -12,6 +12,7 @@ v0.1.0 - Initial revision
 - Used the parameter PARAM_XXX to select date for execution
 - create a cron to run daily the scritpt
 
+v0.2.4 - Using monan version 0.3.0 + minor fixes 
 
 ### Implementation at Egeon:
 

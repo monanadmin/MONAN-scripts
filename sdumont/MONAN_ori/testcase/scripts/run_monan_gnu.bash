@@ -188,12 +188,12 @@ cat > degrib_exe.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
 #SBATCH --nodes=1
-#SBATCH --tasks=${numNucleos}                     # ic for benchmark
+# BATCH --tasks=${numNucleos}                     # ic for benchmark
 #SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
 #SBATCH --tasks-per-node=1                      # ic for benchmark
 #SBATCH --time=${sTime}
-#SBATCH --output=${LOGDIR}/my_job_ungrib.o%j    # File name for standard output
-#SBATCH --error=${LOGDIR}/my_job_ungrib.e%j     # File name for standard error output
+#SBATCH --output=${LOGDIR}/ungrib.o%j    # File name for standard output
+#SBATCH --error=${LOGDIR}/ungrib.e%j     # File name for standard error output
 #
 echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
 echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
@@ -338,8 +338,8 @@ cat > InitAtmos_exe.sh <<EOF0
 #SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
 #SBATCH --tasks-per-node=${numNucleos}     # fron load_monan_app_modules.sh
 #SBATCH --time=${JobElapsedTime}
-#SBATCH --output=${LOGDIR}/my_job_ic.o%j    # File name for standard output
-#SBATCH --error=${LOGDIR}/my_job_ic.e%j     # File name for standard error output
+#SBATCH --output=${LOGDIR}/ic.o%j    # File name for standard output
+#SBATCH --error=${LOGDIR}/ic.e%j     # File name for standard error output
 #
 echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
 echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
@@ -477,7 +477,7 @@ if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/diag.2021-01-02_00.00.00.nc was not generated."
-    exit -1
+    exit  1
 fi
 echo -e  "Script \${0} completed. \n"
   

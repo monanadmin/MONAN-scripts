@@ -7,24 +7,28 @@
 # - CR: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
 # - EGK: NETCDFDIR e PNETCDFDIR obtidos de load_monan_app_modules.sh
 
+#CR: TODO: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
+GREEN='\033[1;32m'  # Green
+  RED='\033[1;31m'    # Red
+   NC='\033[0m'        # No Color
+
+function echoGreen(){ echo -en  "${GREEN}==>${1}${NC}\n"; }
+function echoRed  (){ echo -en  "${RED}==>${1}${NC}\n"; }
+
 if [ $# -ne 1 ]
 then
    echo ""
-   echo "Instructions: execute the command below"
+   echoRed "Instructions: execute the command below"
    echo ""
-   echo "${0} [G]"
+   echoRed "${0} [G]"
    echo ""
-   echo "G   :: GitHub link for your personal fork, eg: https://github.com/MYUSER/MONAN-Model.git"
+   echoRed "G :: GitHub link for your personal fork, eg: https://github.com/MYUSER/MONAN-Model.git"
    exit
 fi
 
 version="8"
 github_link=${1}
 
-#CR: TODO: definicoes de colors deveriam constar no load_monan_app_modules.sh tbm:
-GREEN='\033[1;32m'  # Green
-RED='\033[1;31m'    # Red
-NC='\033[0m'        # No Color
 
 case ${version} in
    8) vlabel="v0.1.0";;
@@ -32,11 +36,14 @@ case ${version} in
    6) vlabel="v6.31";;
 esac
 
-export DIRroot=$(pwd)
-export MONAN_SRC_DIR=${DIRroot}/MONAN_src
-export MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_sdumont.gnu
+machine=sdumont
+compiler=gnu
+
+export          DIRroot=$(pwd)
+export    MONAN_SRC_DIR=${DIRroot}/MONAN_src
+export         MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_${machine}.${compiler}
 export CONVERT_MPAS_DIR=${MONAN_SRC_DIR}/convert_mpas
-export MONAN_EXEC_DIR=${DIRroot}/MONAN/exec
+export   MONAN_EXEC_DIR=${DIRroot}/MONAN/exec
 mkdir -p ${MONAN_EXEC_DIR}
 mkdir -p ${MONAN_SRC_DIR}
 mkdir -p ${CONVERT_MPAS_DIR}
@@ -44,7 +51,7 @@ mkdir -p ${CONVERT_MPAS_DIR}
 # install init_atmosphere_model and atmosphere_model
 
 echo ""
-echo -e "${GREEN}==>${NC} Moduling environment for MONAN model...\n"
+echoGreen "Moduling environment for MONAN model...\n"
 
 
 cd ${DIRroot}
@@ -55,14 +62,14 @@ export PNETCDFDIR=${PNETCDF}
 
 if [ -d "${MONANDIR}" ]; then
     echo ""
-    echo -e  "${GREEN}==>${NC} Source dir already exists, updating it ...\n"
+    echoGreen "Source dir already exists, updating it ...\n"
 else
     echo ""
-    echo -e  "${GREEN}==>${NC} Cloning your fork repository...\n"
+    echoGreen "Cloning your fork repository...\n"
     git clone ${github_link} ${MONANDIR}
     if [ ! -d "${MONANDIR}" ]; then
         echo ""
-        echo -e "${RED}==>${NC} An error occurred while cloning your fork. Possible causes:  wrong URL, user or password.\n"
+        echoRed "An error occurred while cloning your fork. Possible causes: wrong URL, user or password.\n"
         exit -1
     fi
 fi

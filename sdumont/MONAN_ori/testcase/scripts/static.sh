@@ -102,8 +102,8 @@ cat > ${STATICPATH}/make_static.sh << EOF0
 #   SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
 #SBATCH --partition=${INIT_ATM_PART}
 #SBATCH --time=${sTime}       # Set a limit on the total run time
-#SBATCH --output=${STATICPATH}/logs/my_job.o%j    # File name for standard output
-#SBATCH --error=${STATICPATH}/logs/my_job.e%j     # File name for standard error output
+#SBATCH --output=${STATICPATH}/logs/static.o%j    # File name for standard output
+#SBATCH --error=${STATICPATH}/logs/static.e%j     # File name for standard error output
 
 executable=init_atmosphere_model
 
@@ -119,6 +119,7 @@ echo  "STARTING AT \`date\` "
 Start=\`date +%s.%N\`
 echo \$Start > ${STATICPATH}/Timing
 
+rm x1.*.static.nc
 date
 #time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
 time mpirun -np \$SLURM_NTASKS ./\${executable}

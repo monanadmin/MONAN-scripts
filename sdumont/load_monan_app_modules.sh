@@ -28,8 +28,8 @@ echo PNETCDF=$PNETCDF
 export LIBS="$LIBS -lstdc++"
 export OMP_NUM_THREADS=1
 
-export INIT_ATM_PART=sequana_cpu_dev 
 export INIT_ATM_PART=sequana_cpu_shared 
+export INIT_ATM_PART=sequana_cpu_dev 
 export      numNodes=1   # 4 is max value possible to sequana_cpu_dev
 export    numNucleos=32
 export         sTime=00:20:00 # 20 minutes is the maximum time to sequana_cpu_dev
@@ -38,7 +38,7 @@ function modelParallelOptionA() {
 export  ATM_MODEL_PART=sequana_cpu_shared
 export   numNodesModel=4
 export numNucleosModel=128
-export      sTimeModel=03:00:00
+export      sTimeModel=04:00:00
 }
 
 function modelParallelOptionB() {
@@ -49,4 +49,4 @@ export      sTimeModel=01:30:00
 }
 
 
-modelParallelOptionB
+modelParallelOptionA

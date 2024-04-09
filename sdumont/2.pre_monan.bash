@@ -88,8 +88,8 @@ pwd
 date
 comando="sbatch --wait -p sequana_cpu_dev -t 00:20:00 make_static.sh"
 comando="sbatch --wait                                make_static.sh"
-#echo $comando ;# read -p "arguardando um ok!"
-#eval $comando
+echo $comando ;# read -p "arguardando um ok!"
+eval $comando
 date
 
 if [ ! -e x1.1024002.static.nc ]; then

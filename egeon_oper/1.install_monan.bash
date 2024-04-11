@@ -67,7 +67,7 @@ fi
 
 cd ${MONANDIR}
 
-branch_name="monan0.3.0"
+branch_name="develop"
 if git checkout "$branch_name" 2>/dev/null; then
     git pull
     echo -e "${GREEN}==>${NC} Successfully checked out and updated branch: $branch_name"

@@ -12,12 +12,12 @@ Folders:
 
 **HISTORY**
 
-v0.1.0 - egeon
-v0.2.0 - egeon_oper folder: Initial developments for using GFS as IC
-v0.2.1 - egeon folder: Eliminating spack and WPS compilation; Reducing number of scripts and extra steps; Improvements in performance; Using MONAN string instead of MPAS
-v0.2.2 - egeon folder: general improvements
-v0.2.3 - egeon_oper folder: Bug Fix in step 2 static.sh e make_static.sh
-v0.2.4 - egeon_oper folder: including namelists removed from model, parametrizing branch name
+- v0.1.0 - egeon folder: Quick Start initial version
+- v0.2.0 - egeon_oper folder: Initial developments for using GFS as IC
+- v0.2.1 - egeon folder: Eliminating spack and WPS compilation; Reducing number of scripts and extra steps; Improvements in performance; Using MONAN string instead of MPAS
+- v0.2.2 - egeon folder: general improvements
+- v0.2.3 - egeon_oper folder: Bug Fix in step 2 static.sh e make_static.sh
+- v0.2.4 - egeon_oper folder: including namelists removed from model, parametrizing branch name
 
 
 

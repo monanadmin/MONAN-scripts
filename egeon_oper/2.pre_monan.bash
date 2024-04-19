@@ -161,7 +161,6 @@ if [ ! -e x1.${RES}.init.nc ]; then
   exit -1
 fi
 
-
 echo -e  "${GREEN}==>${NC} Submitting MONAN and waiting for finish before exit ... \n"
 echo -e  "${GREEN}==>${NC} Logs being generated at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs ... \n"
 echo -e  "sbatch ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh"
@@ -170,7 +169,7 @@ sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monan_exe.sh
 if [ ! -e "${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/monanprd/diag.${final_date}.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
-    echo "File ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/x1.${RES}.init.nc was not generated."
+    echo "File ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/diag.${final_date}.nc was not generated."
     exit -1
 fi
 echo -e "${GREEN}==>${NC} Please, check the output log files at ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/logs to be sure that MONAN ended successfully. \n"

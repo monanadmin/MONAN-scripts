@@ -63,6 +63,24 @@ FCST=${4}
 LABELF=${5}
 
 start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
+echo "start_date=$start_date"
+
+datai=${LABELI}
+echo ${datai}
+
+
+for i in $(seq 0 $FCST)
+do
+   echo "i=$i"
+   # add i to datai
+   hh=${datai:8:2}
+   currentdate=`date -d "${datai:0:8} ${hh}:00 ${i} hours" +"%Y%m%d%H"`   
+   echo "${currentdate}"
+   diag_name=diag.${currentdate:0:4}-${currentdate:4:2}-${currentdate:6:2}_${currentdate:8:2}.00.00.nc
+   echo "diag_name=${diag_name}" 
+done
+
+
 
 EXPDIR=${RUNDIR}/${EXP}/${LABELI}
 LOGDIR=${EXPDIR}/logs
@@ -414,24 +432,48 @@ export LOG_FILE=${EXPDIR}/postprd/logs/pos.out
 
 START_DATE_YYYYMMDD=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}
 
+# creating run dir
+
+for i in $(seq 0 $FCST)
+do
+   mkdir -p ${EXPDIR}/postprd/run_$i
+done
+
+
 # copy convert_mpas from MONAN/exec to testcase
-rm -f ${EXPDIR}/postprd/convert_mpas
-ln -s ${EXECPATH}/convert_mpas ${EXPDIR}/postprd
+#rm -f ${EXPDIR}/postprd/convert_mpas
+#ln -s ${EXECPATH}/convert_mpas ${EXPDIR}/postprd
+
+for i in $(seq 0 $FCST)
+do
+   rm -f ${EXPDIR}/postprd/run_$i/convert_mpas
+   ln -s ${EXECPATH}/convert_mpas ${EXPDIR}/postprd/run_$i
+done
 
 # copy from repository to testcase
-#cp ${SCRDIR}/prec.gs ${EXPDIR}/postprd/prec.gs
-cp ${SCRDIR}/ngrid2latlon.sh ${EXPDIR}/postprd/ngrid2latlon.sh
-cp ${SCRDIR}/include* ${EXPDIR}/postprd/.          # choice only some variables
-cp ${SCRDIR}/target* ${EXPDIR}/postprd/.           # regrid for regions
-cp ${BASEDIR}/NCL/*.ncl ${EXPDIR}/postprd/.        # example NCL script
+##cp ${SCRDIR}/prec.gs ${EXPDIR}/postprd/prec.gs
+#cp ${SCRDIR}/ngrid2latlon.sh ${EXPDIR}/postprd/ngrid2latlon.sh
+#cp ${SCRDIR}/include* ${EXPDIR}/postprd/.          # choice only some variables
+#cp ${SCRDIR}/target* ${EXPDIR}/postprd/.           # regrid for regions
+#cp ${BASEDIR}/NCL/*.ncl ${EXPDIR}/postprd/.        # example NCL script
+
+for i in $(seq 0 $FCST)
+do
+   cp ${SCRDIR}/ngrid2latlon.sh ${EXPDIR}/postprd/run_$i/.
+   cp ${SCRDIR}/include* ${EXPDIR}/postprd/run_$i/.          # choice only some variables
+   cp ${SCRDIR}/target* ${EXPDIR}/postprd/run_$i/.           # regrid for regions
+   cp ${BASEDIR}/NCL/*.ncl ${EXPDIR}/postprd/run_$i/.        # example NCL script
+done
+
 
 # creating log dir
+
 mkdir -p ${EXPDIR}/postprd/logs
 
 #
 
-cd ${EXPDIR}/postprd
 
+cd ${EXPDIR}/postprd
 
 cat > prec.gs <<EOF0
 
@@ -465,12 +507,14 @@ cat > prec.gs <<EOF0
 
 EOF0
 
+
+
 cat > PostAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=PostAtmos
-#SBATCH --nodes=1
+#SBATCH --nodes=8
 #SBATCH --partition=batch 
-#SBATCH --tasks-per-node=1
+#SBATCH --tasks-per-node=32
 #SBATCH --time=4:00:00
 #SBATCH --output=${LOGDIR}/my_job_pa.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/my_job_pa.e%j     # File name for standard error output
@@ -480,12 +524,97 @@ module load netcdf
 module load netcdf-fortran 
 module load cdo-2.0.4-gcc-9.4.0-bjulvnd
 module load opengrads-2.2.1
+module load nco-5.0.1-gcc-11.2.0-u37c3hb
 
-rm -f ${LOG_FILE} 
-echo -e  "Executing post processing...\n" >> ${LOG_FILE} 2>&1
+cd ${EXPDIR}/postprd
 
-# runs ./ngrid2latlon.sh
-${EXPDIR}/postprd/ngrid2latlon.sh ${RES} ${LABELI} ${LABELF} >> ${LOG_FILE} 2>&1
+rm -f diag* latlon*
+
+datai=$datai
+resolution=$RES
+
+aux=$(echo "$FCST/2" | bc)
+aux1=$(echo "$FCST/2+1" | bc)
+echo "aux=\$aux"
+echo "aux1=\$aux1"
+
+
+for i in \$(seq 0 \$aux)
+do
+   rm -f \${LOG_FILE} 
+   echo -e  "Executing post processing...\n" >> \${LOG_FILE} 2>&1
+
+   # add i to datai
+   hh=\${datai:8:2}
+   currentdate=\`date -d "\${datai:0:8} \${hh}:00 \${i} hours" +"%Y%m%d%H"\`
+   diag_name=diag.\${currentdate:0:4}-\${currentdate:4:2}-\${currentdate:6:2}_\${currentdate:8:2}.00.00.nc
+
+   echo "currentdate=\$currentdate" 
+   echo "diag_name=\$diag_name" 
+
+   cd ${EXPDIR}/postprd/run_\$i
+   rm -f include_fields
+   cp include_fields.diag include_fields
+   rm -f latlon.nc
+
+   time ./convert_mpas ../../monanprd/x1.\${resolution}.init.nc ../../monanprd/\$diag_name  > saida.txt & 
+   echo "./convert_mpas ../../monanprd/x1.\${resolution}.init.nc ../../monanprd/\$diag_name"
+
+#   ps aux | grep convert_mpas > saida_\$i
+
+done
+
+# necessario aguardar as rodadas em background
+wait
+
+for i in \$(seq \$aux1 $FCST)
+do
+   rm -f \${LOG_FILE} 
+   echo -e  "Executing post processing...\n" >> \${LOG_FILE} 2>&1
+
+   # add i to datai
+   hh=\${datai:8:2}
+   currentdate=\`date -d "\${datai:0:8} \${hh}:00 \${i} hours" +"%Y%m%d%H"\`
+   diag_name=diag.\${currentdate:0:4}-\${currentdate:4:2}-\${currentdate:6:2}_\${currentdate:8:2}.00.00.nc
+
+   echo "currentdate=\$currentdate" 
+   echo "diag_name=\$diag_name" 
+
+   cd ${EXPDIR}/postprd/run_\$i
+   rm -f include_fields
+   cp include_fields.diag include_fields
+   rm -f latlon.nc
+
+   time ./convert_mpas ../../monanprd/x1.\${resolution}.init.nc ../../monanprd/\$diag_name  > saida.txt & 
+   echo "./convert_mpas ../../monanprd/x1.\${resolution}.init.nc ../../monanprd/\$diag_name"
+
+#   ps aux | grep convert_mpas > saida_\$i
+
+done
+
+# necessario aguardar as rodadas em background
+wait
+
+   
+cd ${EXPDIR}/postprd
+
+rm -f diag* latlon*
+
+for i in \$(seq 0 $FCST)
+do
+   mv ${EXPDIR}/postprd/run_\$i/latlon.nc ./latlon_\$i.nc 
+done
+
+# erro de concatenacao: ordem dos tempos errada 
+#ncrcat latlon_* latlon.nc
+#cdo mergetime latlon_* latlon.nc
+
+# correcao:
+find . -maxdepth 1 -name "latlon_*" | sort -n -t _ -k 2 | cut -c3- | sed ':a;$!N;s/\n//;ta;' | sed 's/nc/nc /g' | xargs ncrcat -o latlon.nc
+
+
+cdo settunits,hours -settaxis,${START_DATE_YYYYMMDD},${START_HH}:00,1hour latlon.nc diagnostics_${START_DATE_YYYYMMDD}.nc
+
 
 # runs prec.gs
 grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
@@ -509,8 +638,10 @@ grads -bpcx "run ${EXPDIR}/postprd/prec.gs" >> ${LOG_FILE} 2>&1
 ##cp -f  ${EXPDIR}/postprd/ngrid2latlon.sh ${EXPDIR}/scripts
 
 
+
 exit 0
 EOF0
+
 
 chmod +x PostAtmos_exe.sh
 

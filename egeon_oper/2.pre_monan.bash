@@ -88,6 +88,9 @@ mkdir -p ${DIRMONAN}/tar
 echo -e  "${GREEN}==>${NC} MONAN-Scripts last commit: \n"
 git log | head -1
 
+echo -e  "${GREEN}==>${NC} MONAN-Scripts actual branch: \n"
+git branch -a
+
 echo -e  "${GREEN}==>${NC} Copying and decompressing testcase data... \n"
 tar -xzf ${DIRDADOS}/MONAN_testcase_GFS.v1.0.tgz -C ${DIRroot}
 
@@ -180,7 +183,7 @@ echo -e  "\n${GREEN}==>${NC} Executing post processing...\n"
 cd ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd
 sbatch --wait ${DIRMONAN}/testcase/runs/${EXP}/${LABELI}/postprd/PostAtmos_exe.sh
 
-files_pos=("diagnostics_${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}.nc" "include_fields" "prec.gs" "MONAN.png")
+files_pos=("diagnostics_${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}.nc" "prec.gs" "MONAN.png")
 for file in "${files_pos[@]}"; do
   if [[ ! -e "$file" ]]; then
     echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"         

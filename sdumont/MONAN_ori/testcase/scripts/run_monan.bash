@@ -18,14 +18,14 @@
 #
 # !CALLING SEQUENCE:
 #     
-#        ./run_monan_gnu.egeon EXP_NAME LABELI
+#        ./run_monan.egeon EXP_NAME LABELI
 #
 # For benchmark:
-#        ./run_monan_gnu.bash CFSR 2010102300
+#        ./run_monan.bash CFSR 2010102300
 #
 # For ERA5 datasets
 #
-#        ./run_monan_gnu.bash ERA5 2021010100
+#        ./run_monan.bash ERA5 2021010100
 #
 #           o EXP_NAME : Forcing: ERA5, CFSR, GFS, etc.
 #           o LABELI   : Initial: date 2015030600
@@ -43,7 +43,7 @@
 #EOC
 
 function usage(){
-   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan_gnu.bash | head -n -1
+   sed -n '/^# !CALLING SEQUENCE:/,/^# !/{p}' ./run_monan.bash | head -n -1
 }
 
 #
@@ -58,8 +58,7 @@ fi
 export HUGETLB_VERBOSE=0
 
 #
-# Caminhos
-#
+# Caminhos #
 
 HOME=$SCRATCH 
 HSTMAQ=$(hostname)
@@ -82,6 +81,8 @@ EXECPATH=${BASEDIR}/../exec
 #
 EXP=${1}
 LABELI=${2}; start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
+RES=40962
+RES=1024002
 
 EXPDIR=${RUNDIR}/${EXP}/${LABELI}
 LOGDIR=${EXPDIR}/logs
@@ -181,27 +182,25 @@ export start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
 #
 # scripts
 #
-JobName=era4monan
+JobName=era4monan.${COMPILER}
 #
-pwd 
 cat > degrib_exe.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
 #SBATCH --nodes=1
-# BATCH --tasks=${numNucleos}                     # ic for benchmark
 #SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
 #SBATCH --tasks-per-node=1                      # ic for benchmark
 #SBATCH --time=${sTime}
 #SBATCH --output=${LOGDIR}/ungrib.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/ungrib.e%j     # File name for standard error output
 #
-echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
-echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
-echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
-echo            SLURM_NTASKS=\$SLURM_NTASKS
-echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
-echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
-echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
+echo "    SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION"
+echo "     SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST"
+echo "    SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES"
+echo "           SLURM_NTASKS=\$SLURM_NTASKS"
+echo "        SLURM_TIMELIMIT=\$SLURM_TIMELIMIT"
+echo "  SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE"
+echo "SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET"
 ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
@@ -323,31 +322,31 @@ sed -e "s,#LABELI#,${start_date},g;s,#GEODAT#,${GEODATA},g" \
 	 ${NMLDIR}/namelist.init_atmosphere.TEMPLATE > ./namelist.init_atmosphere
 
 cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
-cp -f ${NMLDIR}/x1.1024002.graph.info.part.${numNucleos} .
+#cp -f ${NMLDIR}/x1.1024002.graph.info.part.${numNucleos} .
+cp -f ${NMLDIR}/x1.$RES.graph.info.part.${numNucleos} .
 
 # executable
 ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
 
-JobName=ic_monan
+JobName=ic_monan.${COMPILER}
 
-pwd
 cat > InitAtmos_exe.sh <<EOF0
 #!/bin/bash
 #SBATCH --job-name=${JobName}
 #SBATCH --nodes=${numNodes}             # depends on how many boundary files are available
+#SBATCH --ntasks=${numNucleos}     # fron load_monan_app_modules.sh
 #SBATCH --partition=${INIT_ATM_PART}      # fron load_monan_app_modules.sh
-#SBATCH --tasks-per-node=${numNucleos}     # fron load_monan_app_modules.sh
 #SBATCH --time=${JobElapsedTime}
 #SBATCH --output=${LOGDIR}/ic.o%j    # File name for standard output
 #SBATCH --error=${LOGDIR}/ic.e%j     # File name for standard error output
 #
-echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
-echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
-echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
-echo            SLURM_NTASKS=\$SLURM_NTASKS
-echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
-echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
-echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
+echo "    SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION"
+echo "     SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST"
+echo "    SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES"
+echo "           SLURM_NTASKS=\$SLURM_NTASKS"
+echo "        SLURM_TIMELIMIT=\$SLURM_TIMELIMIT"
+echo "  SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE"
+echo "SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET"
 
 export executable=init_atmosphere_model
 
@@ -405,11 +404,11 @@ fi
 
 cd ${EXPDIR}
 
- JobName=MONAN.GNU      
+ JobName=MODEL.${COMPILER}    # from load_monan_app_modules.sh     
    cores=${numNucleosModel}   # from load_monan_app_modules.sh
    NODES=${numNodesModel}     # from load_monan_app_modules.sh
-partName=${ATM_MODEL_PART} # from load_monan_app_modules.sh
-wallTime=${sTimeModel}     # from load_monan_app_modules.sh
+partName=${ATM_MODEL_PART}    # from load_monan_app_modules.sh
+wallTime=${sTimeModel}        # from load_monan_app_modules.sh
 
 ln -sf ${EXECPATH}/atmosphere_model .
 cp -f ${TBLDIR}/* .
@@ -423,7 +422,8 @@ fi
 cp -f ${NMLDIR}/stream_list.atmosphere.* .
 
 if [ ${EXP} = "ERA5" ]; then
- cp -f ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
+ #cp -f ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
+ cp -f ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 else
  cp -f ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
 fi 
@@ -436,16 +436,16 @@ cat > monan_exe.sh <<EOF0
 #SBATCH      --partition=${partName} 
 #SBATCH       --job-name=${JobName}
 #SBATCH           --time=${wallTime}        
-#SBATCH         --output=${LOGDIR}/monan_model.o%j # File name for standard output
-#SBATCH          --error=${LOGDIR}/monan_model.e%j # File name for standard error output
+#SBATCH         --output=${LOGDIR}/model.o%j # File name for standard output
+#SBATCH          --error=${LOGDIR}/model.e%j # File name for standard error output
 
-echo     SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION
-echo      SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST
-echo     SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES
-echo            SLURM_NTASKS=\$SLURM_NTASKS
-echo         SLURM_TIMELIMIT=\$SLURM_TIMELIMIT
-echo   SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE
-echo SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET
+echo "    SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION"
+echo "     SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST"
+echo "    SLURM_JOB_NUM_NODES=\$SLURM_JOB_NUM_NODES"
+echo "           SLURM_NTASKS=\$SLURM_NTASKS"
+echo "        SLURM_TIMELIMIT=\$SLURM_TIMELIMIT"
+echo "  SLURM_NTASKS_PER_NODE=\$SLURM_NTASKS_PER_NODE"
+echo "SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET"
 
 export executable=atmosphere_model
 
@@ -498,8 +498,8 @@ find ${EXPDIR} -maxdepth 1 -type l -exec rm -f {}
 exit 0
 EOF0
 
-chmod +x monan_exe.sh
 
+chmod +x monan_exe.sh
 exit 0
 
 #######################################################################

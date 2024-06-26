@@ -1,0 +1,29 @@
+Checking for nf-config... OK
+Checking for NetCDF Fortran 90 library interface... OK
+Checking for NetCDF4 support... OK (Adding -DHAVE_NETCDF4_SUPPORT to FFLAGS)
+Checking for nf90_inq_varids... OK (Adding -DHAVE_NF90_INQ_VARIDS to FFLAGS)
+( cd src; make FC="gfortran" FFLAGS="-O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS" FCINCLUDES="-I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include" FCLIBS="-L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -lnetcdff -L/scratch/app_sequana/gcc/13.2/lib64 -L/scratch/app_sequana/gcc/13.2/lib -L/scratch/app_sequana/openmpi/4.1.6_gnu/lib -L/scratch/app_sequana/hdf5/1.12.2_threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/pnetcdf/1.12.3_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -lnetcdf -lnetcdf -ldl -lm -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/gcc/13.2/lib64 -Wl,-rpath,/scratch/app_sequana/gcc/13.2/lib -Wl,-rpath,/scratch/app_sequana/openmpi/4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/hdf5/1.12.2_threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/pnetcdf/1.12.3_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib  -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib " )
+make[1]: Entering directory `/scratch/cenapadrjsd/eduardo.garcia2/MONAN-scripts/sdumont/convert_mpas-1.0.0/src'
+rm -f scan_input.o scan_input.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c scan_input.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f mpas_mesh.o mpas_mesh.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c mpas_mesh.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f target_mesh.o target_mesh.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c target_mesh.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f remapper.o remapper.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c remapper.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f file_output.o file_output.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c file_output.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f copy_atts.o copy_atts.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c copy_atts.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f field_list.o field_list.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c field_list.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f timer.o timer.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c timer.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+rm -f convert_mpas.o convert_mpas.mod
+gfortran -O3 -DHAVE_NETCDF4_SUPPORT -DHAVE_NF90_INQ_VARIDS -c convert_mpas.F90 -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include -I/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/include
+gfortran -o convert_mpas scan_input.o mpas_mesh.o target_mesh.o remapper.o file_output.o copy_atts.o field_list.o timer.o convert_mpas.o -L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -lnetcdff -L/scratch/app_sequana/gcc/13.2/lib64 -L/scratch/app_sequana/gcc/13.2/lib -L/scratch/app_sequana/openmpi/4.1.6_gnu/lib -L/scratch/app_sequana/hdf5/1.12.2_threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/pnetcdf/1.12.3_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -L/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -lnetcdf -lnetcdf -ldl -lm -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/gcc/13.2/lib64 -Wl,-rpath,/scratch/app_sequana/gcc/13.2/lib -Wl,-rpath,/scratch/app_sequana/openmpi/4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/hdf5/1.12.2_threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/pnetcdf/1.12.3_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib  -Wl,-rpath,/scratch/app_sequana/netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu/lib 
+make[1]: Leaving directory `/scratch/cenapadrjsd/eduardo.garcia2/MONAN-scripts/sdumont/convert_mpas-1.0.0/src'
+if [ -f src/convert_mpas ] ; then \
+   ( cp src/convert_mpas . ) \
+fi;

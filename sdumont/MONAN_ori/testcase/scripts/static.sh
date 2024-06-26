@@ -57,8 +57,10 @@ SCRIPTFILEPATH=${BASEDIR}/runs
 STATICPATH=${SCRIPTFILEPATH}/${EXP}/static
 
 # CR+BIDU: enquanto desenv: de 32 para 4
+nodes=${numNodes}  # from load_monan_app_modules.sh
 cores=${numNucleos}  # from load_monan_app_modules.sh
-. ${BASEDIR}/../../load_monan_app_modules.sh
+source ${BASEDIR}/../../load_monan_app_modules.sh $COMPILER
+
 
 #
 # Criando diretorio dados Estaticos
@@ -97,7 +99,7 @@ cp -f  ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
 cat > ${STATICPATH}/make_static.sh << EOF0
 #!/bin/bash
 #SBATCH --job-name=static
-#SBATCH --nodes=1              # Specify number of nodes
+#SBATCH --nodes=${nodes}              # Specify number of nodes
 #SBATCH --ntasks=${cores}             
 #   SBATCH --tasks-per-node=1     # Specify number of (MPI) tasks on each node
 #SBATCH --partition=${INIT_ATM_PART}
@@ -111,7 +113,7 @@ ulimit -s unlimited
 ulimit -c unlimited
 ulimit -v unlimited
 
-. ${BASEDIR}/../../load_monan_app_modules.sh
+source ${BASEDIR}/../../load_monan_app_modules.sh $COMPILER
 
 cd ${STATICPATH}
 
@@ -122,7 +124,8 @@ echo \$Start > ${STATICPATH}/Timing
 rm x1.*.static.nc
 date
 #time mpirun -np \$SLURM_NTASKS -env UCX_NET_DEVICES=mlx5_0:1 -genvall ./\${executable}
-time mpirun -np \$SLURM_NTASKS ./\${executable}
+comando="time mpirun -np \$SLURM_NTASKS ./\${executable}"
+echo \$comando; eval \$comando
 
 End=\`date +%s.%N\`
 echo  "FINISHED AT \`date\` "

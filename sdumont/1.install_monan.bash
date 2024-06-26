@@ -39,6 +39,7 @@ esac
 machine=sdumont
 compiler=gnu
 
+
 export          DIRroot=$(pwd)
 export    MONAN_SRC_DIR=${DIRroot}/MONAN_src
 export         MONANDIR=${MONAN_SRC_DIR}/MONAN-Model_${vlabel}_${machine}.${compiler}
@@ -53,9 +54,9 @@ mkdir -p ${CONVERT_MPAS_DIR}
 echo ""
 echoGreen "Moduling environment for MONAN model...\n"
 
+function createExecs(){ # atmosphere_model init_atmosphere_model ungrib.exe
 
 cd ${DIRroot}
-. ${DIRroot}/load_monan_app_modules.sh
 
 export NETCDFDIR=${NETCDF}
 export PNETCDFDIR=${PNETCDF}
@@ -165,34 +166,52 @@ cd ${MONANDIR}
 #para funcionamento no Sdumont com compilador gnu - BD_fev_2024
 sed '/DMPAS_BUILD_TARGET/a override LIBS += -lstdc++' Makefile  -i
 . ${MONANDIR}/make.sh
-cd ${DIRroot}
 
-echo ""
-echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
-
-. load_convertmpas_modules.sh
-
-echo ""
-echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository...\n"
-cd ${MONAN_SRC_DIR}
-git clone http://github.com/mgduda/convert_mpas.git
-cd ${CONVERT_MPAS_DIR}
-echo ""
-echo -e  "${GREEN}==>${NC} Installing convert_mpas...\n"
-make clean
-make  2>&1 | tee make.convert.output
-
-cp -f ${CONVERT_MPAS_DIR}/convert_mpas ${MONAN_EXEC_DIR}/
 
 cd ${DIRroot}
 
-if [ -s "${MONAN_EXEC_DIR}/convert_mpas" ] ; then
+}  # createExecs()
+
+
+function createConvert_mpas(){
+
+  echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
+  echo ""
+  echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository...\n"
+#  git clone http://github.com/mgduda/convert_mpas.git
+#  wget https://github.com/monanadmin/convert_mpas/archive/refs/tags/1.0.0.tar.gz
+#  tar -xvf 1.0.0.tar.gz
+
+export convert_mpasDIR="$(ls | grep "^convert_mpas-1.0.0" |grep -v zip)"
+  echo convert_mpasDIR=$convert_mpasDIR +++
+export CONVERT_MPAS_DIR=${DIRroot}/00convert_mpas
+export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
+
+  echo CONVERT_MPAS_DIR=$CONVERT_MPAS_DIR +++; read
+  cd ${CONVERT_MPAS_DIR}
+  echo ""
+  echo -e  "${GREEN}==>${NC} Installing convert_mpas...\n"
+  make clean
+  comando="make  2>&1 | tee make.convert.output"
+  echo $comando; eval $comando;
+
+  cp -f ${CONVERT_MPAS_DIR}/convert_mpas ${MONAN_EXEC_DIR}/
+
+  cd ${DIRroot}
+
+  if [ -s "${MONAN_EXEC_DIR}/convert_mpas" ] ; then
     echo ""
     echo -e "${GREEN}==>${NC} File convert_mpas generated Sucessfully in ${CONVERT_MPAS_DIR} and copied to ${MONAN_EXEC_DIR} !"
     echo
-else
+  else
     echo -e "${RED}==>${NC} !!! An error occurred during convert_mpas build. Check output"
     exit -1
-fi
+  fi
 
-echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"
+  echo -e  "${GREEN}==>${NC} Script ${0} completed. \n"
+} # function createConvert_mpas(){
+
+source ${DIRroot}/load_monan_app_modules.sh $compiler
+createExecs # atmosphere_model init_atmosphere_model ungrib.exe
+createConvert_mpas
+

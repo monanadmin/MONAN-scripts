@@ -187,8 +187,9 @@ export convert_mpasDIR="$(ls | grep "^convert_mpas-1.0.0" |grep -v zip)"
 export CONVERT_MPAS_DIR=${DIRroot}/00convert_mpas
 export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
 
-  echo CONVERT_MPAS_DIR=$CONVERT_MPAS_DIR +++; read
+  echo CONVERT_MPAS_DIR=$CONVERT_MPAS_DIR +++; 
   cd ${CONVERT_MPAS_DIR}
+  pwd
   echo ""
   echo -e  "${GREEN}==>${NC} Installing convert_mpas...\n"
   make clean
@@ -214,4 +215,5 @@ export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
 source ${DIRroot}/load_monan_app_modules.sh $compiler
 createExecs # atmosphere_model init_atmosphere_model ungrib.exe
 createConvert_mpas
+ls -ltr  $MONAN_EXEC_DIR
 

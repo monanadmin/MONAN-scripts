@@ -25,7 +25,7 @@ errCode=$?; if [ $errCode -ne 0 ]; then echo aborted at ngrid2latlon.sh, A!! err
 
 comando="cdo settunits,hours -settaxis,2021-01-01,00:00,1hour latlon.nc surface.nc"
 #echo $comando; eval $comando;
-date
+#date
 ls -ltr *.nc |grep -v "diag\|hist"
 #exit 0
 rm -f latlon.nc
@@ -43,7 +43,7 @@ errCode=$?; if [ $errCode -ne 0 ]; then echo aborted at ngrid2latlon.sh, B!! err
 
 comando="cdo settunits,hours -settaxis,2021-01-01,00:00,3hour latlon.nc wind+pw_sfc.nc"
 #echo $comando; eval $comando;
-date
+#date
 #ls -ltr *.nc |grep -v "diag\|hist"
 #rm -f latlon.nc 
 
@@ -56,9 +56,9 @@ comando="./convert_mpas ../monanprd/history.2021-01-02_00.00.00.nc"
 comando="./convert_mpas ../monanprd/history.2021-01-01_03.00.00.nc"
 echo $comando; eval $comando;
 errCode=$?; if [ $errCode -ne 0 ]; then echo aborted at ngrid2latlon.sh, C!! error $errCode ; exit $errCode; fi
-date
+#date
 pwd
-comando="ls -ltr \*.nc |grep -v \"diag\|hist\""
+comando="ls -ltr *.nc |grep -v \"diag\|hist\""
 echo $comando; eval $comando;
 
 comando="cdo -setreftime,1900-01-01,00:00:00,1day -setdate,1900-01-01 -setcalendar,standard latlon.nc history.2021-01-02_00.00.00.nc"
@@ -68,7 +68,7 @@ comando="cdo -setreftime,1900-01-01,00:00:00,1day -setdate,1900-01-01 -setcalend
 # 24h
 #cdo settunits,hours -settaxis,2021-01-02,00:00,3hour latlon.nc history.2021-01-02_00.00.00.nc
 #cdo settunits,hours -settaxis,2021-01-02,00:00,3hour latlon.nc history.2021-01-01_03.00.00.nc
-date
+#date
 #ls -ltr *.nc |grep -v "diag\|hist"
 #rm -f latlon.nc
 

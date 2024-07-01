@@ -57,6 +57,7 @@ export  ATM_MODEL_PART=sequana_cpu_shared; export sTimeModel=04:00:00
 export  ATM_MODEL_PART=sequana_cpu_dev;    export sTimeModel=00:20:00
 export   numNodesModel=4
 export numNucleosModel=64
+export numNucleosModel=128
 }
 
 function modelParallelOptionB() {

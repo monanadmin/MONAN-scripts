@@ -27,8 +27,7 @@ then
 fi
 
 version="8"
-github_link=${1}
-
+github_link=${1}; shift
 
 case ${version} in
    8) vlabel="v0.1.0";;
@@ -37,8 +36,8 @@ case ${version} in
 esac
 
 machine=sdumont
+compiler=intel
 compiler=gnu
-
 
 export          DIRroot=$(pwd)
 export    MONAN_SRC_DIR=${DIRroot}/MONAN_src
@@ -51,15 +50,21 @@ mkdir -p ${CONVERT_MPAS_DIR}
 
 # install init_atmosphere_model and atmosphere_model
 
+if [ $compiler = "gnu" ]; then
+  buildTarget=gfortran
+else
+  buildTarget==intel-mpi
+fi
+echo buildTarget=$buildTarget
+#exit
+
+
 echo ""
 echoGreen "Moduling environment for MONAN model...\n"
 
-function createExecs(){ # atmosphere_model init_atmosphere_model ungrib.exe
+function cloneMPAS(){
 
 cd ${DIRroot}
-
-export NETCDFDIR=${NETCDF}
-export PNETCDFDIR=${PNETCDF}
 
 if [ -d "${MONANDIR}" ]; then
     echo ""
@@ -74,7 +79,12 @@ else
         exit -1
     fi
 fi
+}  # function cloneMPAS(){
 
+function createExecs(){ # atmosphere_model init_atmosphere_model ungrib.exe
+export NETCDFDIR=${NETCDF}
+export PNETCDFDIR=${PNETCDF}
+#return 
 cd ${MONANDIR}
 
 branch_name="develop"
@@ -130,7 +140,8 @@ export PNETCDF=${PNETCDFDIR}
 export PIO=
 
 make clean CORE=atmosphere
-make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+#make -j 8 gfortran CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+make -j 8 ${buildTarget} CORE=atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
 
 mkdir -p ${MONANDIR}/bin
 mv ${MONANDIR}/atmosphere_model ${MONANDIR}/bin/
@@ -138,7 +149,8 @@ mv ${MONANDIR}/build_tables ${MONANDIR}/bin/
 make clean CORE=atmosphere
 
 make clean CORE=init_atmosphere
-make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+#make -j 8 gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
+make -j 8 ${buildTarget} CORE=init_atmosphere OPENMP=true USE_PIO2=false PRECISION=single 2>&1 | tee make.output
 
 mv ${MONANDIR}/init_atmosphere_model ${MONANDIR}/bin/
 make clean CORE=init_atmosphere
@@ -173,18 +185,20 @@ cd ${DIRroot}
 }  # createExecs()
 
 
+function cloneConvert_mpas(){
+  git clone http://github.com/mgduda/convert_mpas.git
+  wget https://github.com/monanadmin/convert_mpas/archive/refs/tags/1.0.0.tar.gz
+  tar -xvf 1.0.0.tar.gz
+} # function cloneConvert_mpas(){
+
 function createConvert_mpas(){
 
   echo -e  "${GREEN}==>${NC} Moduling environment for convert_mpas...\n"
   echo ""
   echo -e  "${GREEN}==>${NC} Cloning convert_mpas repository...\n"
-#  git clone http://github.com/mgduda/convert_mpas.git
-#  wget https://github.com/monanadmin/convert_mpas/archive/refs/tags/1.0.0.tar.gz
-#  tar -xvf 1.0.0.tar.gz
 
 export convert_mpasDIR="$(ls | grep "^convert_mpas-1.0.0" |grep -v zip)"
   echo convert_mpasDIR=$convert_mpasDIR +++
-export CONVERT_MPAS_DIR=${DIRroot}/00convert_mpas
 export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
 
   echo CONVERT_MPAS_DIR=$CONVERT_MPAS_DIR +++; 
@@ -213,7 +227,9 @@ export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
 } # function createConvert_mpas(){
 
 source ${DIRroot}/load_monan_app_modules.sh $compiler
+#cloneMPAS
 createExecs # atmosphere_model init_atmosphere_model ungrib.exe
-createConvert_mpas
+#cloneConvert_mpas
+#createConvert_mpas
 ls -ltr  $MONAN_EXEC_DIR
 

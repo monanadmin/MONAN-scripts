@@ -1,4 +1,9 @@
 #!/bin/bash
+#SBATCH --nodes=1                #Número de Nós
+#SBATCH --ntasks=1               #Numero total de tarefas MPI
+#SBATCH -p sequana_cpu_dev       #Fila (partition) a ser utilizada
+#SBATCH -J post.monan            #Nome job
+#SBATCH --time=00:20:00          #Obrigatório
 
 # TODO list:
 # - ...
@@ -16,6 +21,7 @@ export RED='\033[1;31m' # Red
 export NC='\033[0m'        # No Color
 
 #. ./load_monan_app_modules.sh
+function load_modules(){
 module load sequana/current
 module load git/2.23_sequana
 module load python/3.9.1_sequana
@@ -26,9 +32,17 @@ export SPACK_USER_CONFIG_PATH=/scratch/cenapadrjsd/rpsouto/sequana/.spack/v0.18.
 spack env activate monan
 spack load cdo
 spack load netcdf-fortran@4.5.4%gcc@13.2.0
+
+
+module load grads/grads-2.2.1_sequana
+
+} # function load_modules(){
+
+
 #module load cdo/2.4.0_openmpi-4.1.6_sequana
 #module load netcdf; module load netcdf-fortran; module load cdo-2.0.4-gcc-9.4.0-bjulvnd; module load opengrads-2.2.1;
 
+function runPostProc(){
 # start post processing
 
 echo -e  "\n${GREEN}==>${NC} Executing post processing...\n"
@@ -37,28 +51,49 @@ rm -f ${LOG_FILE}
 
 # copy convert_mpas from MONAN/exec to testcase
 cd ${POST_DIR}
-rm -f ${POST_DIR}/convert_mpas >> ${LOG_FILE}
+rm -f ${POST_DIR}/convert_mpas ; # >> ${LOG_FILE}
+rm -f ${POST_DIR}/mean.nc ${POST_DIR}/wind+pw_sfc.nc ; # >> ${LOG_FILE}
 #ln -s ${MONAN_EXEC_DIR}/convert_mpas ${POST_DIR} >> ${LOG_FILE}
 #ln -s /scratch/cenapadrjsd/rpsouto/sequana/projetos/monan/github/monanadmin/convert_mpas/convert_mpas >> ${LOG_FILE}
-ln -s /scratch/cenapadrjsd/rpsouto/sequana/projetos/monan/github/monanadmin/MONAN-scripts/sdumont/convert_mpas/convert_mpas >> ${LOG_FILE}
+#ldd  /scratch/cenapadrjsd/rpsouto/sequana/projetos/monan/github/monanadmin/MONAN-scripts/sdumont/convert_mpas/convert_mpas
+EXEC=/scratch/cenapadrjsd/rpsouto/sequana/projetos/monan/github/monanadmin/MONAN-scripts/sdumont/convert_mpas/convert_mpas
+echo $EXEC; 
+#return 
+ln -fs $EXEC >> ${LOG_FILE}
 
 # copy from repository to testcase and runs /ngrid2latlon.sh
-cp ${DIRMONAN_ORI}/testcase/scripts/ngrid2latlon.sh ${POST_DIR}/ngrid2latlon.sh >> ${LOG_FILE}
-comando="${POST_DIR}/ngrid2latlon.sh >> ${LOG_FILE} 2>&1"
+#cp -p ${DIRMONAN_ORI}/testcase/scripts/ngrid2latlon.sh ${POST_DIR}/ngrid2latlon.sh >> ${LOG_FILE}
+comando="${POST_DIR}/ngrid2latlon.sh " # >> ${LOG_FILE} 2>&1"
 echo $comando; eval $comando;
-errCode=$?; if [ $errCode -ne 0 ]; then echo .. aborted at ./4.pos_monan.bash !! error: $errCode; tail ${LOG_FILE};  exit $errCode; fi
+errCode=$?; if [ $errCode -ne 0 ]; then echo .. aborted at $0 !! error: $errCode; tail ${LOG_FILE};  exit $errCode; fi
 echo ..... $errCode ....
-comando="pwd; head ${LOG_FILE} "
-echo $comando; eval $comando;
-comando="pwd; tail ${LOG_FILE} "
-echo $comando; eval $comando;
+ls -ltr |tail -5
+comando="cdo settunits,hours -settaxis,2021-01-01,00:00,1hour latlon.nc surface.nc"
+#echo $comando; eval $comando;
+ls -ltr |tail -5
 
+} # function runPostProc(){
+#comando="pwd; head ${LOG_FILE} "; echo $comando; eval $comando;
+#comando="pwd; tail ${LOG_FILE} "; echo $comando; eval $comando;
+
+function runPostProcB(){
 # copy from repository to testcase and runs prec.gs
-cp ${DIRMONAN_ORI}/testcase/scripts/prec.gs ${POST_DIR}/prec.gs >> ${LOG_FILE}
+#comandoC="cp ${DIRMONAN_ORI}/testcase/scripts/prec.gs ${POST_DIR}/prec.gs >> ${LOG_FILE}"
+#echo $comandoC; read -p "A, esperando um ok!"; eval $comandoC;
 #grads -bpcx "run '${POST_DIR}'/prec.gs" >> ${LOG_FILE} 2>&1
-grads -blcx "run ${POST_DIR}/prec.gs" >> ${LOG_FILE} 2>&1
+echo POST_DIR=${POST_DIR}
+comando="which grads" # >> ${LOG_FILE} 2>&1"
+echo $comando;  # read -p "C, esperando um ok!";
+eval $comando;
+comando="ls -ltr |tail -10"; echo $comando;eval $comando;
+comandoG="grads -blx  -c \"run ${POST_DIR}/prec.gs\" " # >> ${LOG_FILE} 2>&1"
+echo $comandoG;  # read -p "C, esperando um ok!"; 
+eval $comandoG;
+comando="ls -ltr |tail -10"; echo $comando;eval $comando;
 
-cdo hourmean surface.nc mean.nc >> ${LOG_FILE} 2>&1
+comando="cdo hourmean surface.nc mean.nc " # >> ${LOG_FILE} 2>&1"
+echo $comando; eval $comando;
+comando="ls -ltr |tail -10"; echo $comando;eval $comando;
 
 files_pos=("mean.nc" "wind+pw_sfc.nc" "surface.nc" "include_fields" "prec.gs" "MONAN.png")
 for file in "${files_pos[@]}"; do
@@ -73,7 +108,12 @@ done
 echo -e  "${GREEN}==>${NC}  Script ${0} completed. \n"
 echo -e  "${GREEN}==>${NC}  Log file: ${LOG_FILE} . End of script. \n"
 
+} # function runPostProcB(){
 #exit
-spack unload
-spack env deactivate
-exit
+#spack unload
+#spack env deactivate
+#exit
+load_modules
+pwd
+runPostProc
+runPostProcB

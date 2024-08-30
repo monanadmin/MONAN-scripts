@@ -81,7 +81,6 @@ EXECPATH=${BASEDIR}/../exec
 #
 EXP=${1}
 LABELI=${2}; start_date=${LABELI:0:4}-${LABELI:4:2}-${LABELI:6:2}_${LABELI:8:2}:00:00
-RES=40962
 RES=1024002
 
 EXPDIR=${RUNDIR}/${EXP}/${LABELI}
@@ -150,6 +149,7 @@ fi
 #
 
 cd ${EXPDIR}
+echo PWD=$(pwd)
 
 ##############################################################################
 #
@@ -159,7 +159,10 @@ cd ${EXPDIR}
 
 if [ ${EXP} = "ERA5" ]; then
 
-cp -f ${BASEDIR}/runs/${EXP}/static/*.nc .
+echo "BASEDIR=${BASEDIR}"
+pwd
+comando="cp -f ${BASEDIR}/runs/${EXP}/static/*.nc ."
+echo "em $(basename $0); ${comando}"; eval ${comando}
 
 cd ${EXPDIR}/wpsprd
 
@@ -321,9 +324,12 @@ cd ${EXPDIR}
 sed -e "s,#LABELI#,${start_date},g;s,#GEODAT#,${GEODATA},g" \
 	 ${NMLDIR}/namelist.init_atmosphere.TEMPLATE > ./namelist.init_atmosphere
 
-cp ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere
+echo PWD=$(pwd)
+comando="cp -f ${NMLDIR}/streams.init_atmosphere.TEMPLATE ./streams.init_atmosphere"
+echo "em run_monan.bash; " ${comando}; eval ${comando}
 #cp -f ${NMLDIR}/x1.1024002.graph.info.part.${numNucleos} .
-cp -f ${NMLDIR}/x1.$RES.graph.info.part.${numNucleos} .
+comando="cp -f ${NMLDIR}/x1.$RES.graph.info.part.${numNucleos} ."
+echo "em run_monan.bash; " ${comando}; eval ${comando}
 
 # executable
 ln -sf ${EXECPATH}/init_atmosphere_model init_atmosphere_model
@@ -381,14 +387,18 @@ date
 exit 0
 EOF0
 
+#echo "EXIT em run ....SH" ; exit
 chmod +x InitAtmos_exe.sh
 
 else
 
 echo "Benchmark CFSR 2010102300 15 km"
-cp -f ${BNDDIR}/x1.* .
-cp -f ${NMLDIR}/namelist.atmosphere.BENCH namelist.atmosphere
-cp -f ${NMLDIR}/streams.atmosphere.BENCH streams.atmosphere
+comando="cp -f ${BNDDIR}/x1.* ."
+echo "em run_monan.bash; " ${comando}; eval ${comando}
+comando="cp -f ${NMLDIR}/namelist.atmosphere.BENCH namelist.atmosphere"
+echo "em run_monan.bash; " ${comando}; eval ${comando}
+comando="cp -f ${NMLDIR}/streams.atmosphere.BENCH streams.atmosphere"
+echo "em run_monan.bash; " ${comando}; eval ${comando}
 
 fi
 
@@ -414,18 +424,25 @@ ln -sf ${EXECPATH}/atmosphere_model .
 cp -f ${TBLDIR}/* .
 
 if [ ${EXP} = "ERA5" ]; then
+echo PWD="$(pwd)"
 sed -e "s,#LABELI#,${start_date},g" \
          ${NMLDIR}/namelist.atmosphere.TEMPLATE > ./namelist.atmosphere
-cp -f ${NMLDIR}/streams.atmosphere.TEMPLATE streams.atmosphere
+comando="cp -f ${NMLDIR}/streams.atmosphere.TEMPLATE streams.atmosphere"
+echo "em run_monan.bash; " ${comando}; eval ${comando}
 fi
 
-cp -f ${NMLDIR}/stream_list.atmosphere.* .
+echo PWD="$(pwd)"
+comando="cp -f ${NMLDIR}/stream_list.atmosphere.* ."
+echo "em run_monan.bash; " ${comando}; eval ${comando}
 
+echo PWD="$(pwd)"
 if [ ${EXP} = "ERA5" ]; then
  #cp -f ${NMLDIR}/x1.1024002.graph.info.part.${cores} .
- cp -f ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+ comando="cp -f ${NMLDIR}/x1.${RES}.graph.info.part.${cores} ."
+  echo "em run_monan.bash; " ${comando}; eval ${comando}
 else
- cp -f ${NMLDIR}/x1.2621442.graph.info.part.${cores} .
+ comando="cp -f ${NMLDIR}/x1.2621442.graph.info.part.${cores} ."
+  echo "em run_monan.bash; " ${comando}; eval ${comando}
 fi 
 
 cat > monan_exe.sh <<EOF0
@@ -436,8 +453,8 @@ cat > monan_exe.sh <<EOF0
 #SBATCH      --partition=${partName} 
 #SBATCH       --job-name=${JobName}
 #SBATCH           --time=${wallTime}        
-#SBATCH         --output=${LOGDIR}/model.o%j # File name for standard output
-#SBATCH          --error=${LOGDIR}/model.e%j # File name for standard error output
+#SBATCH         --output=${LOGDIR}/atmosphere.%j # File name for standard output
+#SBATCH          --error=${LOGDIR}/atmosphere.%j # File name for standard error output
 
 echo "    SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION"
 echo "     SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST"
@@ -450,7 +467,7 @@ echo "SLURM_NTASKS_PER_SOCKET=\$SLURM_NTASKS_PER_SOCKET"
 export executable=atmosphere_model
 
 cd ${DIRroot}
-. ${DIRroot}/load_monan_app_modules.sh
+source ${DIRroot}/load_monan_app_modules.sh
 
 # generic
 ulimit -s unlimited
@@ -500,6 +517,8 @@ EOF0
 
 
 chmod +x monan_exe.sh
+echo "fim de run_monan...." ; exit 0
+
 exit 0
 
 #######################################################################
@@ -508,9 +527,8 @@ exit 0
 #
 #######################################################################
 
-cd ${EXPDIR}/postprd
+#cd ${EXPDIR}/postprd
 
 #
 
-exit 0
 

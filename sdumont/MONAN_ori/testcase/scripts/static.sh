@@ -74,9 +74,12 @@ cd ${STATICPATH}
 
 ln -sf ${TBLDIR}/* .
 
+echo PWD="$(pwd)"
 #ln -sf ${DATADIR}/meshes/x1.${RES}.grid.nc .
-cp -f ${DATADIR}/meshes/x1.${RES}.grid.nc .
 
+comando="cp -f ${DATADIR}/meshes/x1.${RES}.grid.nc ."
+echo "em $(basename $0), $comando"; eval $comando
+ 
 ln -sf ${EXECFILEPATH}/init_atmosphere_model .
 
 sed -e "s,#GEODAT#,${GEODATA},g;s,#RES#,${RES},g" \
@@ -89,7 +92,8 @@ sed -e "s,#RES#,${RES},g" \
 
 
 #ln -sf ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
-cp -f  ${NMLDIR}/x1.${RES}.graph.info.part.${cores} .
+comando="cp -f ${NMLDIR}/x1.${RES}.graph.info.part.${cores} ."
+echo "em $(basename $0), $comando"; eval $comando
 
 #
 # make submission job

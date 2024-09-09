@@ -18,7 +18,6 @@ pnetcdfModule="pnetcdf/1.12.3_intel-2020_sequana"
 function modulosG(){
  netcdfModule="netcdf/4.8.1_hdf5-threadsafe-HL_openmpi-4.1.6_gnu_sequana"
 pnetcdfModule="pnetcdf/1.12.3_hdf5-threadsafe-HL_openmpi-4.1.6_gnu_sequana"
-  export LIBS="$LIBS -lstdc++"
 }
 
 if [ "${COMPILER,,}" == "gnu" ] ; then  # ,, to lowerCase string
@@ -39,7 +38,7 @@ if [ "${COMPILER,,}" == "gnu" ] ; then  # ,, to lowerCase string
   comando="module load $netcdfModule"
   echo $comando;  eval $comando;  
   comando="module load $cdoModule";
-  echo $comando;  eval $comando;  
+  #echo $comando;  eval $comando;  
 
   #comando="module load grads/grads-2.2.1_sequana"; echo $comando;  eval $comando;  
 

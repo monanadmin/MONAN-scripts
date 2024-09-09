@@ -414,7 +414,7 @@ fi
 
 cd ${EXPDIR}
 
- JobName=MODEL.${COMPILER}    # from load_monan_app_modules.sh     
+ JobName=atmos.${COMPILER}    # from load_monan_app_modules.sh     
    cores=${numNucleosModel}   # from load_monan_app_modules.sh
    NODES=${numNodesModel}     # from load_monan_app_modules.sh
 partName=${ATM_MODEL_PART}    # from load_monan_app_modules.sh
@@ -453,8 +453,8 @@ cat > monan_exe.sh <<EOF0
 #SBATCH      --partition=${partName} 
 #SBATCH       --job-name=${JobName}
 #SBATCH           --time=${wallTime}        
-#SBATCH         --output=${LOGDIR}/atmosphere.%j # File name for standard output
-#SBATCH          --error=${LOGDIR}/atmosphere.%j # File name for standard error output
+#SBATCH         --output=${LOGDIR}/atmosphere.o%j # File name for standard output
+#SBATCH          --error=${LOGDIR}/atmosphere.e%j # File name for standard error output
 
 echo "    SLURM_JOB_PARTITION=\$SLURM_JOB_PARTITION"
 echo "     SLURM_JOB_NODELIST=\$SLURM_JOB_NODELIST"
@@ -494,7 +494,7 @@ if [ ! -e "${EXPDIR}/diag.2021-01-02_00.00.00.nc" ]; then
     echo "********* ATENTION ************"
     echo "An error running MONAN occurred. check logs folder"
     echo "File ${EXPDIR}/diag.2021-01-02_00.00.00.nc was not generated."
-    exit  1
+    #exit  5
 fi
 echo -e  "Script \${0} completed. \n"
   
@@ -517,7 +517,7 @@ EOF0
 
 
 chmod +x monan_exe.sh
-echo "fim de run_monan...." ; exit 0
+echo "fim de run_monan...." ;
 
 exit 0
 

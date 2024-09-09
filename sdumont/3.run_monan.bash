@@ -8,7 +8,7 @@ export DIRroot=$(pwd)
 export DIRMONAN=${DIRroot}/MONAN
 
 export GREEN='\033[1;32m'  # Green
-export NC='\033[0m'        # No Color
+export    NC='\033[0m'     # No Color
 
 echo -e  "${GREEN}==>${NC} Submitting MONAN and waiting for finish before exit ... \n"
 echo -e  "${GREEN}==>${NC} Logs being generated at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs ... \n"

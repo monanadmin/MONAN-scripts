@@ -56,8 +56,6 @@ else
   buildTarget==intel-mpi
 fi
 echo buildTarget=$buildTarget
-#exit
-
 
 echo ""
 echoGreen "Moduling environment for MONAN model...\n"
@@ -84,7 +82,6 @@ fi
 function createExecs(){ # atmosphere_model init_atmosphere_model ungrib.exe
 export NETCDFDIR=${NETCDF}
 export PNETCDFDIR=${PNETCDF}
-#return 
 cd ${MONANDIR}
 
 branch_name="develop"
@@ -176,7 +173,22 @@ echo ""
 
 cd ${MONANDIR}
 #para funcionamento no Sdumont com compilador gnu - BD_fev_2024
-sed '/DMPAS_BUILD_TARGET/a override LIBS += -lstdc++' Makefile  -i
+#sed '/DMPAS_BUILD_TARGET/a override LIBS += -lstdc++' Makefile  -i
+
+
+if [ "$machine.$compiler" == "sdumont.gnu" ] ; then
+echo checking ${MONANDIR}/Makefile 
+  if grep -q stdc++ ${MONANDIR}/Makefile ;
+   then
+      echo Makefile already has -lstdc++ included
+   else
+    echo including -lstdc++ at Makefile
+    comando="export LIBS=\"$LIBS -lstdc++\""
+    comando="sed '/DMPAS_BUILD_TARGET/a override LIBS += -lstdc++' ${MONANDIR}/Makefile  -i"
+    echo $comando; eval $comando;
+   fi
+fi
+
 . ${MONANDIR}/make.sh
 
 
@@ -227,9 +239,11 @@ export CONVERT_MPAS_DIR=${DIRroot}/$convert_mpasDIR
 } # function createConvert_mpas(){
 
 source ${DIRroot}/load_monan_app_modules.sh $compiler
-#cloneMPAS
+
+cloneMPAS
 createExecs # atmosphere_model init_atmosphere_model ungrib.exe
-#cloneConvert_mpas
-#createConvert_mpas
+exit
+cloneConvert_mpas
+createConvert_mpas
 ls -ltr  $MONAN_EXEC_DIR
 

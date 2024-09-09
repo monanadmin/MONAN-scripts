@@ -20,8 +20,8 @@ export NC='\033[0m'        # No Color
 mkdir -p ${DIRMONAN}/logs 
 mkdir -p ${DIRMONAN}/namelist 
 mkdir -p ${DIRMONAN}/tar
-  RES=40962
   RES=1024002
+  RES=40962
 
 function dataPhase(){ # data part 
   echo ----------------    em function firstPart
@@ -36,7 +36,7 @@ function dataPhase(){ # data part
   if [ ! -s MONAN_testcase_v1.0.tgz ] 
   then
      echo "dado nao existe no MONAN_testcase_v1.0.tgz"
-     exit
+     #exit
   fi
   tar -xzf MONAN_testcase_v1.0.tgz -C ${DIRroot}
   # Temporariamente, enquanto desenv:----------------------------------------------^
@@ -56,7 +56,7 @@ function dataPhase(){ # data part
   if [ ! -s ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz ] 
   then
      echo "dado nao existe no ${DIRDADOS_LOCAL}/MONAN_data_v1.0.tgz"
-     exit
+     #exit
   fi
 
   if [ -d MONAN/data ] 
@@ -132,11 +132,10 @@ function static (){
   echo $comando; eval $comando
   date
 
-#  return
   if [ ! -e x1.$RES.static.nc ]; then
     echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
     echo -e  "${RED}==>${NC} Static phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/static/logs . Exiting script. \n"
-    exit 1
+    #exit 1
   else
     echo -e  "${GREEN}==>${NC} Static phase finished ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/static/logs.\n"
   fi
@@ -190,7 +189,7 @@ function degrib(){ # make_degrib
       echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	  
       echo -e  "${RED}==>${NC} Degrib fails ! At least the file ${file} was not generated at ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/. \n"
       echo -e  "${RED}==>${NC} Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script. \n"
-      exit  1
+      #exit  1
     fi
   done
   echo -e  "${GREEN}==>${NC} Degrib finished ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/wpsprd/. \n"
@@ -209,7 +208,7 @@ function initAtmos(){ # make_init_atmos
   if [ ! -e x1.$RES.init.nc ]; then
     echo -e  "\n${RED}==>${NC} ***** ATTENTION *****\n"	
     echo -e  "${RED}==>${NC} Init Atmosphere phase fails ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs . Exiting script.\n"
-    exit -1
+    #exit -1
   else
     echo -e  "${GREEN}==>${NC} Init Atmosphere phase finished ! Check logs at ${DIRMONAN}/testcase/runs/ERA5/2021010100/logs.\n"
   fi
@@ -217,7 +216,7 @@ function initAtmos(){ # make_init_atmos
 } # function initAtmos
 
 #shift
-source ./load_monan_app_modules.sh $COMPILER
+source ${DIRroot}/load_monan_app_modules.sh $compiler
 
 #dataPhase  # testcase data phase, originals scripts  + ungrib
 
@@ -226,6 +225,8 @@ if [ $RES -eq "40962" ] ; then 40962dataA; fi
 static #  static.sh e submit make_static.sh -> x1.$RES.static.nc
 
 criarDataAndSLURMScripts  # run_monan.bash;
+
+# commands below shows discretization adopted at initial condition and at model
 comando="grep \"x1\" /scratch/cenapadrjsd/eduardo.garcia2/MONAN-scripts/sdumont/MONAN/testcase/runs/ERA5/2021010100/*.init_atmosphere"
 echo $comando ; eval $comando
 comando="grep \"x1\" /scratch/cenapadrjsd/eduardo.garcia2/MONAN-scripts/sdumont/MONAN/testcase/runs/ERA5/2021010100/*.atmosphere"
